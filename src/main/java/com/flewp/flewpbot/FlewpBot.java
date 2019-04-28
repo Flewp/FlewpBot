@@ -1,3 +1,5 @@
+package com.flewp.flewpbot;
+
 public class FlewpBot {
 
     public FlewpBot() {
