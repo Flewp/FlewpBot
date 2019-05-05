@@ -1,0 +1,15 @@
+# https://dev.twitch.tv/console/apps/create
+twitchClientID: empty
+twitchClientSecret: empty
+
+# Get this at twitchtokengenerator.com, once done the first time, it'll be automatically refreshed
+# as long as app is run every 60 days
+twitchAccessToken: empty
+twitchRefreshToken: empty
+
+# https://streamlabs.com/dashboard#/apps/register
+streamLabsClientID: empty
+streamLabsClientSecret: empty
+streamLabsToken: empty
+
+
