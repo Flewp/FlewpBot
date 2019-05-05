@@ -15,7 +15,7 @@
             <url>https://jcenter.bintray.com/</url>
         </repository>
         <repository>
-            <id>jcenter-snapshot</id>
+            <id>jcenter-release</id>
             <url>https://oss.jfrog.org/artifactory/libs-release/</url>
         </repository>
         <repository>
