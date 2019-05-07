@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +78,7 @@ public class StreamlabsAPIController {
                     .withClientSecret(client_secret)
                     .build();
 
-            //getNewDonations();
+            getNewDonations();
 
             service = Executors.newScheduledThreadPool(1);
             service.scheduleAtFixedRate(() -> {
