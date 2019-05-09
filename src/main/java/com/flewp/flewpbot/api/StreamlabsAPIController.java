@@ -34,9 +34,8 @@ public class StreamlabsAPIController {
 
     private Credential credential;
     private StreamlabsClient streamlabsClient;
-    private ScheduledExecutorService service;
 
-    private Long previousDonation = 1L;
+    private Integer previousDonation = 1;
 
     public StreamlabsAPIController(Configuration configuration, EventManager eventManager) {
         this.configuration = configuration;
@@ -80,7 +79,7 @@ public class StreamlabsAPIController {
 
             getNewDonations();
 
-            service = Executors.newScheduledThreadPool(1);
+            ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
             service.scheduleAtFixedRate(() -> {
                 StreamlabsDonationsData newDonations = getNewDonations();
                 if (newDonations != null && newDonations.getDonations() != null && !newDonations.getDonations().isEmpty()) {
@@ -95,7 +94,7 @@ public class StreamlabsAPIController {
 
     private StreamlabsDonationsData getNewDonations() {
         StreamlabsDonationsData response = streamlabsClient.getApi()
-                .getDonations(credential.getAccessToken(), 6, null, Long.toString(previousDonation), "USD", null).execute();
+                .getDonations(credential.getAccessToken(), 6, null, Integer.toString(previousDonation), "USD", null).execute();
 
         if (response == null || response.getDonations() == null || response.getDonations().isEmpty()) {
             return null;
@@ -104,8 +103,8 @@ public class StreamlabsAPIController {
         List<StreamlabsDonationsData.StreamlabsDonation> donations = response.getDonations().subList(0, response.getDonations().size());
         Collections.reverse(donations);
 
-        previousDonation = response.getDonations().get(response.getDonations().size() - 1)
-                .getCreationDate().getTime();
+        previousDonation = Integer.parseInt(response.getDonations().get(response.getDonations().size() - 1)
+                .getId());
 
         return response;
     }
