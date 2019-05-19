@@ -1,22 +1,15 @@
 package com.flewp.flewpbot;
 
-import com.flewp.flewpbot.event.NewDonationEvent;
-import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.chat.events.channel.CheerEvent;
-import com.github.twitch4j.chat.events.channel.GiftSubscriptionsEvent;
-import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
-import com.github.twitch4j.common.events.user.PrivateMessageEvent;
+import com.flewp.flewpbot.event.*;
 
 public interface FlewpBotListener {
-    void onPrivateMessage(PrivateMessageEvent privateMessageEvent);
+    void onWhisperMessage(WhisperEvent whisperEvent);
 
-    void onChatMessage(ChannelMessageEvent channelMessageEvent);
+    void onChatMessage(ChatEvent chatEvent);
 
-    void onCheer(CheerEvent cheerEvent);
+    void onCheer(BitEvent bitEvent);
 
-    void onSubscription(SubscriptionEvent subscriptionEvent);
-
-    void onGiftSubscription(GiftSubscriptionsEvent giftSubscriptionsEvent);
+    void onSubscribe(SubscribeEvent subscribeEvent);
 
     void onNewDonation(NewDonationEvent newDonationEvent);
 }

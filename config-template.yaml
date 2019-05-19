@@ -1,11 +1,16 @@
-# https://dev.twitch.tv/console/apps/create
-twitchClientID: empty
-twitchClientSecret: empty
+# Get this at twitchtokengenerator.com, logged in as the streamer.
+# once done the first time, it'll be automatically refreshed as long as app is run every 60 days
+twitchStreamerAccessToken: empty
+twitchStreamerRefreshToken: empty
+twitchStreamerName: empty
 
-# Get this at twitchtokengenerator.com, once done the first time, it'll be automatically refreshed
-# as long as app is run every 60 days
-twitchAccessToken: empty
-twitchRefreshToken: empty
+# https://dev.twitch.tv/console/apps/create
+twitchAppClientID: empty
+twitchAppClientSecret: empty
+
+twitchChatBotName: empty
+# Your oauth token from http://twitchapps.com/tmi logged in as your bot account
+twitchChatBotAccessToken: empty
 
 # https://streamlabs.com/dashboard#/apps/register
 streamLabsClientID: empty

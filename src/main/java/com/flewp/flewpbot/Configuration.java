@@ -26,10 +26,16 @@ public class Configuration {
         return configuration;
     }
 
-    public String twitchClientID;
-    public String twitchClientSecret;
-    public String twitchAccessToken;
-    public String twitchRefreshToken;
+    public String twitchAppClientID;
+    public String twitchAppClientSecret;
+
+    public String twitchStreamerAccessToken;
+    public String twitchStreamerRefreshToken;
+    public String twitchStreamerName;
+
+    public String twitchChatBotAccessToken;
+    public String twitchChatBotName;
+
     public String streamLabsClientID;
     public String streamLabsClientSecret;
     public String streamLabsAppName;

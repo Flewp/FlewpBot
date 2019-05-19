@@ -1,46 +1,145 @@
 package com.flewp.flewpbot.api;
 
 import com.flewp.flewpbot.Configuration;
-import com.github.philippheuer.credentialmanager.CredentialManager;
-import com.github.philippheuer.credentialmanager.CredentialManagerBuilder;
-import com.github.philippheuer.credentialmanager.domain.OAuth2Credential;
+import com.flewp.flewpbot.event.*;
+import com.flewp.flewpbot.model.Channel;
+import com.flewp.flewpbot.model.ChatRoom;
+import com.flewp.flewpbot.model.ChatRoomsResponse;
 import com.github.philippheuer.events4j.EventManager;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
-import com.github.twitch4j.auth.providers.TwitchIdentityProvider;
-import org.jetbrains.annotations.NotNull;
-import retrofit2.Call;
-import retrofit2.Callback;
+import com.github.twitch4j.helix.domain.UserList;
+import okhttp3.OkHttpClient;
+import org.pircbotx.PircBotX;
+import org.pircbotx.hooks.Event;
+import org.pircbotx.hooks.Listener;
+import org.pircbotx.hooks.events.DisconnectEvent;
+import org.pircbotx.hooks.events.JoinEvent;
+import org.pircbotx.hooks.events.MessageEvent;
+import org.pircbotx.hooks.events.UnknownEvent;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+import sun.plugin.dom.exception.InvalidStateException;
 
-public class TwitchAPIController {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class TwitchAPIController implements Listener {
     private Configuration configuration;
-    private TwitchTokenGeneratorAPI generatorAPI;
     private EventManager eventManager;
 
-    public TwitchAPIController(Configuration configuration, TwitchTokenGeneratorAPI generatorAPI, EventManager eventManager) {
+    private OkHttpClient okHttpClient;
+    private TwitchClient twitchClient;
+    private TwitchTokenGeneratorAPI generatorAPI;
+    private TwitchKrakenAPI krakenAPI;
+
+    private boolean joinedChatRooms;
+    private List<ChatRoom> chatRoomList;
+    private String channelId;
+
+    private ExecutorService botExecutorService;
+    private PircBotX pircBotX;
+
+    public TwitchAPIController(Configuration configuration, EventManager eventManager) {
         this.configuration = configuration;
-        this.generatorAPI = generatorAPI;
         this.eventManager = eventManager;
+
+        botExecutorService = Executors.newSingleThreadExecutor();
+
+        okHttpClient = new OkHttpClient();
+
+        generatorAPI = new Retrofit.Builder()
+                .baseUrl("https://twitchtokengenerator.com/")
+                .client(okHttpClient.newBuilder().build())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build().create(TwitchTokenGeneratorAPI.class);
+
+        pircBotX = new PircBotX(new org.pircbotx.Configuration.Builder()
+                .setAutoNickChange(false)
+                .setOnJoinWhoEnabled(false)
+                .setCapEnabled(true)
+                .addServer("irc.twitch.tv")
+                .setName(configuration.twitchChatBotName)
+                .setServerPassword(configuration.twitchChatBotAccessToken)
+                .addAutoJoinChannel("#" + configuration.twitchStreamerName)
+                .addListener(this)
+                .buildConfiguration());
+
+        joinedChatRooms = false;
     }
 
     public synchronized void connect() {
         try {
-            generatorAPI.refreshToken(configuration.twitchRefreshToken).enqueue(new Callback<RefreshTokenResponse>() {
-                @Override
-                public void onResponse(@NotNull Call<RefreshTokenResponse> call, @NotNull Response<RefreshTokenResponse> response) {
-                    if (response.isSuccessful() && response.body() != null && response.body().success) {
-                        configuration.twitchAccessToken = response.body().token;
-                        configuration.twitchRefreshToken = response.body().refresh;
-                        configuration.dumpFile();
-                    }
+            // Refresh the streamer access token
+            Response<RefreshTokenResponse> tokenResponse = generatorAPI
+                    .refreshToken(configuration.twitchStreamerRefreshToken).execute();
 
-                    init();
-                }
+            if (!tokenResponse.isSuccessful() || tokenResponse.body() == null || !tokenResponse.body().success) {
+                throw new InvalidStateException("Can't refresh streamer access token.");
+            }
 
-                @Override
-                public void onFailure(@NotNull Call<RefreshTokenResponse> call, @NotNull Throwable throwable) {
-                    init();
+            // Update the configuration with the new access token
+            configuration.twitchStreamerAccessToken = tokenResponse.body().token;
+            configuration.twitchStreamerRefreshToken = tokenResponse.body().refresh;
+            configuration.dumpFile();
+
+            // Build Twitch4J
+            twitchClient = TwitchClientBuilder.builder()
+                    .withEnableHelix(true)
+                    .withClientId(configuration.twitchAppClientID)
+                    .withClientSecret(configuration.twitchAppClientSecret)
+                    .withEventManager(eventManager)
+                    .build();
+
+            // Build Kraken API
+            krakenAPI = new Retrofit.Builder()
+                    .baseUrl("https://api.twitch.tv/kraken/")
+                    .client(okHttpClient.newBuilder()
+                            .addInterceptor(new TwitchKrakenRequestInterceptor(configuration.twitchAppClientID, configuration.twitchStreamerAccessToken))
+                            .build())
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build().create(TwitchKrakenAPI.class);
+
+            // Get user ID from given streamer name
+            UserList userList = twitchClient.getHelix().getUsers(configuration.twitchStreamerAccessToken, null,
+                    Collections.singletonList(configuration.twitchStreamerName)).execute();
+
+            if (userList == null || userList.getUsers().isEmpty()) {
+                throw new InvalidStateException("Can't get streamer ID to query chat rooms");
+            }
+
+            String userId = Long.toString(userList.getUsers().get(0).getId());
+
+            Response<Channel> channelResponse = krakenAPI.channel().execute();
+
+            if (!channelResponse.isSuccessful() || channelResponse.body() == null
+                    || channelResponse.body().get_id() == null) {
+                throw new InvalidStateException("Can't get channel information.");
+            }
+
+            channelId = channelResponse.body().get_id();
+
+            // Get chat rooms for streamer
+            Response<ChatRoomsResponse> chatRoomsResponse = krakenAPI.chatRooms(userId).execute();
+
+            if (chatRoomsResponse.isSuccessful() && chatRoomsResponse.body() != null
+                    && chatRoomsResponse.body().getRooms() != null) {
+                chatRoomList = chatRoomsResponse.body().getRooms();
+            } else {
+                chatRoomList = new ArrayList<>();
+            }
+
+            botExecutorService.submit(() -> {
+                try {
+                    pircBotX.startBot();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
 
@@ -49,28 +148,55 @@ public class TwitchAPIController {
         }
     }
 
-    private void init() {
-        OAuth2Credential twitchOAuth2Credential = new OAuth2Credential("twitch", configuration.twitchAccessToken);
+    @Override
+    public void onEvent(Event event) throws Exception {
+        if (event instanceof JoinEvent) {
+            if (joinedChatRooms) {
+                return;
+            }
 
-        CredentialManager twitchCredentialManager = CredentialManagerBuilder.builder().build();
-        twitchCredentialManager.registerIdentityProvider(new TwitchIdentityProvider(configuration.twitchClientID,
-                configuration.twitchClientSecret, "http://localhost:11112/Callback"));
-        twitchCredentialManager.addCredential("twitch",
-                twitchOAuth2Credential);
+            joinedChatRooms = true;
 
+            if (chatRoomList != null && !chatRoomList.isEmpty()) {
+                for (ChatRoom chatRoom : chatRoomList) {
+                    pircBotX.sendRaw().rawLine("JOIN #chatrooms:" + channelId + ":" + chatRoom.get_id());
+                }
+            }
 
-        TwitchClient twitchClient = TwitchClientBuilder.builder()
-                .withEnablePubSub(true)
-                .withEnableHelix(true)
-                .withEnableKraken(true)
-                .withEnableChat(true)
-                .withClientId(configuration.twitchClientID)
-                .withClientSecret(configuration.twitchClientSecret)
-                .withChatAccount(twitchOAuth2Credential)
-                .withCredentialManager(twitchCredentialManager)
-                .withEventManager(eventManager)
-                .build();
+            pircBotX.sendRaw().rawLine("CAP REQ :twitch.tv/tags twitch.tv/commands");
+        } else if (event instanceof MessageEvent) {
+            MessageEvent messageEvent = (MessageEvent) event;
+            if (messageEvent.getTags().containsKey("bits")) {
+                try {
+                    eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags()),
+                            messageEvent.getMessage(), Integer.parseInt(messageEvent.getTags().get("bits"))));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                String chatRoomId = messageEvent.getChannel().getName()
+                        .substring(messageEvent.getChannel().getName().lastIndexOf(":") + 1);
 
-        twitchClient.getChat().joinChannel("flewp");
+                eventManager.dispatchEvent(new ChatEvent(new EventUser(messageEvent.getTags()),
+                        chatRoomList.stream().filter(room -> room.get_id().equals(chatRoomId)).findFirst().orElse(null),
+                        chatRoomId, messageEvent.getMessage()));
+            }
+        } else if (event instanceof UnknownEvent) {
+            UnknownEvent unknownEvent = (UnknownEvent) event;
+            switch (unknownEvent.getCommand()) {
+                case "WHISPER":
+                    eventManager.dispatchEvent(new WhisperEvent(new EventUser(unknownEvent.getTags()),
+                            unknownEvent.getTarget(), unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1)));
+                    break;
+                case "USERNOTICE":
+                    SubscribeEvent subscribeEvent = SubscribeEvent.parse(unknownEvent.getTags());
+                    if (subscribeEvent != null) {
+                        eventManager.dispatchEvent(subscribeEvent);
+                    }
+                    break;
+            }
+        } else if (event instanceof DisconnectEvent) {
+            System.out.println("Chat has been disconnected");
+        }
     }
 }

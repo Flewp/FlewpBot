@@ -2,16 +2,8 @@ package com.flewp.flewpbot;
 
 import com.flewp.flewpbot.api.StreamlabsAPIController;
 import com.flewp.flewpbot.api.TwitchAPIController;
-import com.flewp.flewpbot.api.TwitchTokenGeneratorAPI;
-import com.flewp.flewpbot.event.NewDonationEvent;
+import com.flewp.flewpbot.event.*;
 import com.github.philippheuer.events4j.EventManager;
-import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.chat.events.channel.CheerEvent;
-import com.github.twitch4j.chat.events.channel.GiftSubscriptionsEvent;
-import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
-import com.github.twitch4j.common.events.user.PrivateMessageEvent;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +16,15 @@ public class FlewpBot {
 
     public FlewpBot() {
         Configuration configuration = Configuration.getInstance();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://twitchtokengenerator.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        TwitchTokenGeneratorAPI twitchTokenGeneratorAPI = retrofit.create(TwitchTokenGeneratorAPI.class);
 
         EventManager eventManager = new EventManager();
-        eventManager.onEvent(PrivateMessageEvent.class).subscribe(this::onPrivateMessage);
-        eventManager.onEvent(ChannelMessageEvent.class).subscribe(this::onChatMessage);
-        eventManager.onEvent(CheerEvent.class).subscribe(this::onCheer);
-        eventManager.onEvent(SubscriptionEvent.class).subscribe(this::onSubscription);
-        eventManager.onEvent(GiftSubscriptionsEvent.class).subscribe(this::onGiftSubscription);
+        eventManager.onEvent(WhisperEvent.class).subscribe(this::onWhisperMessage);
+        eventManager.onEvent(ChatEvent.class).subscribe(this::onChatMessage);
+        eventManager.onEvent(BitEvent.class).subscribe(this::onCheer);
+        eventManager.onEvent(SubscribeEvent.class).subscribe(this::onSubscribe);
         eventManager.onEvent(NewDonationEvent.class).subscribe(this::onNewDonation);
 
-        twitchAPIController = new TwitchAPIController(configuration, twitchTokenGeneratorAPI, eventManager);
+        twitchAPIController = new TwitchAPIController(configuration, eventManager);
         streamlabsAPIController = new StreamlabsAPIController(configuration, eventManager);
     }
 
@@ -62,23 +47,19 @@ public class FlewpBot {
         listenerList.forEach(listener -> listener.onNewDonation(newDonationEvent));
     }
 
-    synchronized private void onGiftSubscription(GiftSubscriptionsEvent giftSubscriptionsEvent) {
-        listenerList.forEach(listener -> listener.onGiftSubscription(giftSubscriptionsEvent));
+    synchronized private void onSubscribe(SubscribeEvent subscribeEvent) {
+        listenerList.forEach(listener -> listener.onSubscribe(subscribeEvent));
     }
 
-    synchronized private void onSubscription(SubscriptionEvent subscriptionEvent) {
-        listenerList.forEach(listener -> listener.onSubscription(subscriptionEvent));
+    synchronized private void onCheer(BitEvent bitEvent) {
+        listenerList.forEach(listener -> listener.onCheer(bitEvent));
     }
 
-    synchronized private void onCheer(CheerEvent cheerEvent) {
-        listenerList.forEach(listener -> listener.onCheer(cheerEvent));
+    synchronized private void onChatMessage(ChatEvent chatEvent) {
+        listenerList.forEach(listener -> listener.onChatMessage(chatEvent));
     }
 
-    synchronized private void onChatMessage(ChannelMessageEvent channelMessageEvent) {
-        listenerList.forEach(listener -> listener.onChatMessage(channelMessageEvent));
-    }
-
-    synchronized private void onPrivateMessage(PrivateMessageEvent privateMessageEvent) {
-        listenerList.forEach(listener -> listener.onPrivateMessage(privateMessageEvent));
+    synchronized private void onWhisperMessage(WhisperEvent whisperEvent) {
+        listenerList.forEach(listener -> listener.onWhisperMessage(whisperEvent));
     }
 }

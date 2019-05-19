@@ -3,7 +3,6 @@ package com.flewp.flewpbot;
 import com.flewp.flewpbot.event.NewDonationEvent;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import com.github.twitch4j.chat.events.channel.CheerEvent;
-import com.github.twitch4j.chat.events.channel.GiftSubscriptionsEvent;
 import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
 import com.github.twitch4j.common.events.user.PrivateMessageEvent;
 
@@ -25,11 +24,6 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
 
     @Override
     public void onSubscription(SubscriptionEvent subscriptionEvent) {
-
-    }
-
-    @Override
-    public void onGiftSubscription(GiftSubscriptionsEvent giftSubscriptionsEvent) {
 
     }
 

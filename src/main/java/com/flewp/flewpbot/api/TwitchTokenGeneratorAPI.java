@@ -5,7 +5,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 public interface TwitchTokenGeneratorAPI {
-
-    @GET("/api/refresh/{refreshToken}")
+    @GET("api/refresh/{refreshToken}")
     Call<RefreshTokenResponse> refreshToken(@Path("refreshToken") String refreshToken);
 }
