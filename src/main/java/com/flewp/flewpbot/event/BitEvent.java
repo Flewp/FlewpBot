@@ -24,4 +24,9 @@ public class BitEvent extends Event {
     public int getBits() {
         return bits;
     }
+
+    @Override
+    public String toString() {
+        return "BitEvent [ " + eventUser.toString() + ", bits: " + bits + ", message: " + message;
+    }
 }

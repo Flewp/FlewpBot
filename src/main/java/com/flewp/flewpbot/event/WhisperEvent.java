@@ -24,4 +24,9 @@ public class WhisperEvent extends Event {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return "WhisperEvent [" + eventUser.toString() + ", target: " + target + ", message: " + message;
+    }
 }

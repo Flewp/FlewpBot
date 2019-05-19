@@ -164,6 +164,7 @@ public class TwitchAPIController implements Listener {
             }
 
             pircBotX.sendRaw().rawLine("CAP REQ :twitch.tv/tags twitch.tv/commands");
+            System.out.println("FlewpBot has successfully connected.");
         } else if (event instanceof MessageEvent) {
             MessageEvent messageEvent = (MessageEvent) event;
             if (messageEvent.getTags().containsKey("bits")) {

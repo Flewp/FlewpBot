@@ -3,12 +3,7 @@ package com.flewp.flewpbot.app;
 import com.flewp.flewpbot.FlewpBot;
 import com.flewp.flewpbot.FlewpBotListener;
 import com.flewp.flewpbot.FlewpBotListenerAdapter;
-import com.flewp.flewpbot.event.NewDonationEvent;
-import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.chat.events.channel.CheerEvent;
-import com.github.twitch4j.chat.events.channel.GiftSubscriptionsEvent;
-import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
-import com.github.twitch4j.common.events.user.PrivateMessageEvent;
+import com.flewp.flewpbot.event.*;
 
 class FlewpBotConsole extends FlewpBotListenerAdapter {
     public static void main(String[] args) {
@@ -18,29 +13,25 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
     }
 
     private static class ConsoleListener implements FlewpBotListener {
+
         @Override
-        public void onPrivateMessage(PrivateMessageEvent privateMessageEvent) {
-            System.out.println(privateMessageEvent.toString());
+        public void onWhisperMessage(WhisperEvent whisperEvent) {
+            System.out.println(whisperEvent.toString());
         }
 
         @Override
-        public void onChatMessage(ChannelMessageEvent channelMessageEvent) {
-            System.out.println(channelMessageEvent.toString());
+        public void onChatMessage(ChatEvent chatEvent) {
+            System.out.println(chatEvent.toString());
         }
 
         @Override
-        public void onCheer(CheerEvent cheerEvent) {
-            System.out.println(cheerEvent.toString());
+        public void onCheer(BitEvent bitEvent) {
+            System.out.println(bitEvent.toString());
         }
 
         @Override
-        public void onSubscription(SubscriptionEvent subscriptionEvent) {
-            System.out.println(subscriptionEvent.toString());
-        }
-
-        @Override
-        public void onGiftSubscription(GiftSubscriptionsEvent giftSubscriptionsEvent) {
-            System.out.println(giftSubscriptionsEvent.toString());
+        public void onSubscribe(SubscribeEvent subscribeEvent) {
+            System.out.println(subscribeEvent.toString());
         }
 
         @Override

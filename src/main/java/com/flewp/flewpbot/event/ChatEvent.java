@@ -31,4 +31,9 @@ public class ChatEvent extends Event {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return "ChatEvent [" + eventUser.toString() + ", chatRoomID: " + chatRoomId + ", message: " + message;
+    }
 }

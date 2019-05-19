@@ -1,29 +1,26 @@
 package com.flewp.flewpbot;
 
-import com.flewp.flewpbot.event.NewDonationEvent;
-import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
-import com.github.twitch4j.chat.events.channel.CheerEvent;
-import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
-import com.github.twitch4j.common.events.user.PrivateMessageEvent;
+import com.flewp.flewpbot.event.*;
 
 public class FlewpBotListenerAdapter implements FlewpBotListener {
+
     @Override
-    public void onPrivateMessage(PrivateMessageEvent privateMessageEvent) {
+    public void onWhisperMessage(WhisperEvent whisperEvent) {
 
     }
 
     @Override
-    public void onChatMessage(ChannelMessageEvent channelMessageEvent) {
+    public void onChatMessage(ChatEvent chatEvent) {
 
     }
 
     @Override
-    public void onCheer(CheerEvent cheerEvent) {
+    public void onCheer(BitEvent bitEvent) {
 
     }
 
     @Override
-    public void onSubscription(SubscriptionEvent subscriptionEvent) {
+    public void onSubscribe(SubscribeEvent subscribeEvent) {
 
     }
 

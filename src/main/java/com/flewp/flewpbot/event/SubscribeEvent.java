@@ -68,6 +68,12 @@ public class SubscribeEvent extends Event {
         return subPlan;
     }
 
+    @Override
+    public String toString() {
+        return "SubscribeEvent [ type: " + type.label + ", user: " + eventUser.toString() + ", recipient: " +
+                (recipientUser == null ? "null" : recipientUser.toString()) + ", months: " + months + ", message: " + message;
+    }
+
     private static boolean isSubscribeEvent(Map<String, String> tags) {
         return tags.containsKey("msg-id") && Type.stringToType(tags.get("msg-id")) != null;
     }

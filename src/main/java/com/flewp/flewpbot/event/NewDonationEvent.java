@@ -13,4 +13,9 @@ public class NewDonationEvent extends Event {
     public StreamlabsDonationsData.StreamlabsDonation getDonation() {
         return donation;
     }
+
+    @Override
+    public String toString() {
+        return " DonationEvent [ " + donation.toString();
+    }
 }

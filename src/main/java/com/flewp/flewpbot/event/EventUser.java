@@ -56,4 +56,9 @@ public class EventUser {
                     .collect(Collectors.toSet());
         }
     }
+
+    @Override
+    public String toString() {
+        return "EventUser [" + name + " " + id + "]";
+    }
 }
