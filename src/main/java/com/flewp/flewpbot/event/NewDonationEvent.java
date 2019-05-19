@@ -16,6 +16,6 @@ public class NewDonationEvent extends Event {
 
     @Override
     public String toString() {
-        return " DonationEvent [ " + donation.toString();
+        return "NewDonationEvent [ " + donation.toString() + " ]";
     }
 }

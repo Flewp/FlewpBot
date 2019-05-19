@@ -17,6 +17,7 @@ import org.pircbotx.hooks.events.DisconnectEvent;
 import org.pircbotx.hooks.events.JoinEvent;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.UnknownEvent;
+import org.slf4j.LoggerFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -139,12 +140,12 @@ public class TwitchAPIController implements Listener {
                 try {
                     pircBotX.startBot();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LoggerFactory.getLogger(TwitchAPIController.class).error("Error in PircBot", e);
                 }
             });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LoggerFactory.getLogger(TwitchAPIController.class).error("Error in connecting PircBot", e);
         }
     }
 
@@ -164,7 +165,7 @@ public class TwitchAPIController implements Listener {
             }
 
             pircBotX.sendRaw().rawLine("CAP REQ :twitch.tv/tags twitch.tv/commands");
-            System.out.println("FlewpBot has successfully connected.");
+            LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has successfully connected to chat.");
         } else if (event instanceof MessageEvent) {
             MessageEvent messageEvent = (MessageEvent) event;
             if (messageEvent.getTags().containsKey("bits")) {
@@ -172,7 +173,7 @@ public class TwitchAPIController implements Listener {
                     eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags()),
                             messageEvent.getMessage(), Integer.parseInt(messageEvent.getTags().get("bits"))));
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LoggerFactory.getLogger(TwitchAPIController.class).error("Error in parsing bits: ", e);
                 }
             } else {
                 String chatRoomId = messageEvent.getChannel().getName()
@@ -197,7 +198,7 @@ public class TwitchAPIController implements Listener {
                     break;
             }
         } else if (event instanceof DisconnectEvent) {
-            System.out.println("Chat has been disconnected");
+            LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has disconnected from chat.");
         }
     }
 }

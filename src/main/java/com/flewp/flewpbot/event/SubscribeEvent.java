@@ -71,7 +71,8 @@ public class SubscribeEvent extends Event {
     @Override
     public String toString() {
         return "SubscribeEvent [ type: " + type.label + ", user: " + eventUser.toString() + ", recipient: " +
-                (recipientUser == null ? "null" : recipientUser.toString()) + ", months: " + months + ", message: " + message;
+                (recipientUser == null ? "null" : recipientUser.toString()) + ", months: " + months + ", message: "
+                + message + " ]";
     }
 
     private static boolean isSubscribeEvent(Map<String, String> tags) {

@@ -16,27 +16,27 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
 
         @Override
         public void onWhisperMessage(WhisperEvent whisperEvent) {
-            System.out.println(whisperEvent.toString());
+
         }
 
         @Override
         public void onChatMessage(ChatEvent chatEvent) {
-            System.out.println(chatEvent.toString());
+
         }
 
         @Override
         public void onCheer(BitEvent bitEvent) {
-            System.out.println(bitEvent.toString());
+
         }
 
         @Override
         public void onSubscribe(SubscribeEvent subscribeEvent) {
-            System.out.println(subscribeEvent.toString());
+
         }
 
         @Override
         public void onNewDonation(NewDonationEvent newDonationEvent) {
-            System.out.println(newDonationEvent.toString());
+
         }
     }
 }

@@ -4,6 +4,7 @@ import com.flewp.flewpbot.api.StreamlabsAPIController;
 import com.flewp.flewpbot.api.TwitchAPIController;
 import com.flewp.flewpbot.event.*;
 import com.github.philippheuer.events4j.EventManager;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,22 +45,27 @@ public class FlewpBot {
     }
 
     synchronized private void onNewDonation(NewDonationEvent newDonationEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(newDonationEvent.toString());
         listenerList.forEach(listener -> listener.onNewDonation(newDonationEvent));
     }
 
     synchronized private void onSubscribe(SubscribeEvent subscribeEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(subscribeEvent.toString());
         listenerList.forEach(listener -> listener.onSubscribe(subscribeEvent));
     }
 
     synchronized private void onCheer(BitEvent bitEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(bitEvent.toString());
         listenerList.forEach(listener -> listener.onCheer(bitEvent));
     }
 
     synchronized private void onChatMessage(ChatEvent chatEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(chatEvent.toString());
         listenerList.forEach(listener -> listener.onChatMessage(chatEvent));
     }
 
     synchronized private void onWhisperMessage(WhisperEvent whisperEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(whisperEvent.toString());
         listenerList.forEach(listener -> listener.onWhisperMessage(whisperEvent));
     }
 }
