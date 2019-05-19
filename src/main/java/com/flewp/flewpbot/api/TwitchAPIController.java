@@ -22,7 +22,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +80,7 @@ public class TwitchAPIController implements Listener {
                     .refreshToken(configuration.twitchStreamerRefreshToken).execute();
 
             if (!tokenResponse.isSuccessful() || tokenResponse.body() == null || !tokenResponse.body().success) {
-                throw new InvalidStateException("Can't refresh streamer access token.");
+                throw new IllegalStateException("Can't refresh streamer access token.");
             }
 
             // Update the configuration with the new access token
@@ -112,7 +111,7 @@ public class TwitchAPIController implements Listener {
                     Collections.singletonList(configuration.twitchStreamerName)).execute();
 
             if (userList == null || userList.getUsers().isEmpty()) {
-                throw new InvalidStateException("Can't get streamer ID to query chat rooms");
+                throw new IllegalStateException("Can't get streamer ID to query chat rooms");
             }
 
             String userId = Long.toString(userList.getUsers().get(0).getId());
@@ -121,7 +120,7 @@ public class TwitchAPIController implements Listener {
 
             if (!channelResponse.isSuccessful() || channelResponse.body() == null
                     || channelResponse.body().get_id() == null) {
-                throw new InvalidStateException("Can't get channel information.");
+                throw new IllegalStateException("Can't get channel information.");
             }
 
             channelId = channelResponse.body().get_id();
