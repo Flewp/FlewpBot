@@ -108,4 +108,8 @@ public class StreamlabsAPIController {
 
         return response;
     }
+
+    public StreamlabsClient getStreamlabsClient() {
+        return streamlabsClient;
+    }
 }

@@ -2,8 +2,12 @@ package com.flewp.flewpbot;
 
 import com.flewp.flewpbot.api.StreamlabsAPIController;
 import com.flewp.flewpbot.api.TwitchAPIController;
+import com.flewp.flewpbot.api.TwitchKrakenAPI;
 import com.flewp.flewpbot.event.*;
 import com.github.philippheuer.events4j.EventManager;
+import com.github.twitch4j.TwitchClient;
+import com.github.twitch4j.streamlabs4j.StreamlabsClient;
+import org.pircbotx.PircBotX;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -68,4 +72,21 @@ public class FlewpBot {
         LoggerFactory.getLogger(FlewpBot.class).info(whisperEvent.toString());
         listenerList.forEach(listener -> listener.onWhisperMessage(whisperEvent));
     }
+
+    public PircBotX getPircBotX() {
+        return twitchAPIController.getPircBotX();
+    }
+
+    public TwitchClient getTwitchClient() {
+        return twitchAPIController.getTwitchClient();
+    }
+
+    public TwitchKrakenAPI getTwitchKrakenAPI() {
+        return twitchAPIController.getTwitchKrakenAPI();
+    }
+
+    public StreamlabsClient getStreamlabsClient() {
+        return streamlabsAPIController.getStreamlabsClient();
+    }
+
 }

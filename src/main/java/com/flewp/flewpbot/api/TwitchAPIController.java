@@ -200,4 +200,16 @@ public class TwitchAPIController implements Listener {
             LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has disconnected from chat.");
         }
     }
+
+    public PircBotX getPircBotX() {
+        return pircBotX;
+    }
+
+    public TwitchClient getTwitchClient() {
+        return twitchClient;
+    }
+
+    public TwitchKrakenAPI getTwitchKrakenAPI() {
+        return krakenAPI;
+    }
 }
