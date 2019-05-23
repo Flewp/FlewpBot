@@ -33,6 +33,8 @@ public class EventUser {
     }
 
     public enum Permission {
+        Broadcaster("broadcaster"),
+        Moderator("moderator"),
         Subscriber("subscriber"),
         Partner("partner");
 
