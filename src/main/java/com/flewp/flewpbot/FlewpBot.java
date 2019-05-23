@@ -19,8 +19,10 @@ public class FlewpBot {
 
     private List<FlewpBotListener> listenerList = new ArrayList<>();
 
+    private Configuration configuration;
+
     public FlewpBot() {
-        Configuration configuration = Configuration.getInstance();
+        configuration = Configuration.getInstance();
 
         EventManager eventManager = new EventManager();
         eventManager.onEvent(WhisperEvent.class).subscribe(this::onWhisperMessage);
@@ -88,5 +90,8 @@ public class FlewpBot {
     public StreamlabsClient getStreamlabsClient() {
         return streamlabsAPIController.getStreamlabsClient();
     }
-
+    
+    public Configuration getConfiguration() {
+        return configuration;
+    }
 }
