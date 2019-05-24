@@ -41,6 +41,7 @@ public class TwitchAPIController implements Listener {
     private boolean joinedChatRooms;
     private List<ChatRoom> chatRoomList;
     private String channelId;
+    private String streamerUserId;
 
     private ExecutorService botExecutorService;
     private PircBotX pircBotX;
@@ -114,7 +115,7 @@ public class TwitchAPIController implements Listener {
                 throw new IllegalStateException("Can't get streamer ID to query chat rooms");
             }
 
-            String userId = Long.toString(userList.getUsers().get(0).getId());
+            streamerUserId = Long.toString(userList.getUsers().get(0).getId());
 
             Response<Channel> channelResponse = krakenAPI.channel().execute();
 
@@ -126,7 +127,7 @@ public class TwitchAPIController implements Listener {
             channelId = channelResponse.body().get_id();
 
             // Get chat rooms for streamer
-            Response<ChatRoomsResponse> chatRoomsResponse = krakenAPI.chatRooms(userId).execute();
+            Response<ChatRoomsResponse> chatRoomsResponse = krakenAPI.chatRooms(streamerUserId).execute();
 
             if (chatRoomsResponse.isSuccessful() && chatRoomsResponse.body() != null
                     && chatRoomsResponse.body().getRooms() != null) {
@@ -215,5 +216,9 @@ public class TwitchAPIController implements Listener {
 
     public List<ChatRoom> getChatRoomList() {
         return chatRoomList;
+    }
+
+    public String getStreamerUserId() {
+        return streamerUserId;
     }
 }

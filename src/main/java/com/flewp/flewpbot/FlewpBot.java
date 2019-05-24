@@ -99,4 +99,8 @@ public class FlewpBot {
     public List<ChatRoom> getConnectedChatRooms() {
         return twitchAPIController.getChatRoomList();
     }
+
+    public String getStreamerUserId() {
+        return twitchAPIController.getStreamerUserId();
+    }
 }
