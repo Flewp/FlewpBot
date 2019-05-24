@@ -212,4 +212,8 @@ public class TwitchAPIController implements Listener {
     public TwitchKrakenAPI getTwitchKrakenAPI() {
         return krakenAPI;
     }
+
+    public List<ChatRoom> getChatRoomList() {
+        return chatRoomList;
+    }
 }

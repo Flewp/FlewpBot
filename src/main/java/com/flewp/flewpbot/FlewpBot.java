@@ -4,6 +4,7 @@ import com.flewp.flewpbot.api.StreamlabsAPIController;
 import com.flewp.flewpbot.api.TwitchAPIController;
 import com.flewp.flewpbot.api.TwitchKrakenAPI;
 import com.flewp.flewpbot.event.*;
+import com.flewp.flewpbot.model.ChatRoom;
 import com.github.philippheuer.events4j.EventManager;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.streamlabs4j.StreamlabsClient;
@@ -90,8 +91,12 @@ public class FlewpBot {
     public StreamlabsClient getStreamlabsClient() {
         return streamlabsAPIController.getStreamlabsClient();
     }
-    
+
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public List<ChatRoom> getConnectedChatRooms() {
+        return twitchAPIController.getChatRoomList();
     }
 }
