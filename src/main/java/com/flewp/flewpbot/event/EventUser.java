@@ -60,6 +60,15 @@ public class EventUser {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof EventUser)) {
+            return false;
+        }
+
+        return this.getId().equals(((EventUser) obj).getId());
+    }
+
+    @Override
     public String toString() {
         return "EventUser [" + name + " " + id + "]";
     }
