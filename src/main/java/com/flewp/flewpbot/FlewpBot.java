@@ -103,4 +103,8 @@ public class FlewpBot {
     public String getStreamerUserId() {
         return twitchAPIController.getStreamerUserId();
     }
+
+    public String getStreamerChannelId() {
+        return twitchAPIController.getStreamerChannelId();
+    }
 }
