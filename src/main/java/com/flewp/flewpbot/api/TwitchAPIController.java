@@ -221,4 +221,8 @@ public class TwitchAPIController implements Listener {
     public String getStreamerUserId() {
         return streamerUserId;
     }
+
+    public String getStreamerChannelId() {
+        return channelId;
+    }
 }
