@@ -14,8 +14,8 @@ public class EventUser {
         permissions = Permission.parsePermissions(badges);
     }
 
-    public EventUser(Map<String, String> tags) {
-        this.name = tags.get("display-name").toLowerCase();
+    public EventUser(Map<String, String> tags, String name) {
+        this.name = name;
         this.id = tags.get("user-id").toLowerCase();
         this.permissions = Permission.parsePermissions(tags.get("badges"));
     }

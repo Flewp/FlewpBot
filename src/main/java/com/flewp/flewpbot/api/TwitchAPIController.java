@@ -168,18 +168,18 @@ public class TwitchAPIController implements Listener {
             LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has successfully connected to chat.");
         } else if (event instanceof MessageEvent) {
             MessageEvent messageEvent = (MessageEvent) event;
-            if (messageEvent.getTags().containsKey("bits")) {
+            if (messageEvent.getTags().containsKey("bits") && messageEvent.getUser() != null) {
                 try {
-                    eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags()),
+                    eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
                             messageEvent.getMessage(), Integer.parseInt(messageEvent.getTags().get("bits"))));
                 } catch (Exception e) {
                     LoggerFactory.getLogger(TwitchAPIController.class).error("Error in parsing bits: ", e);
                 }
-            } else {
+            } else if (messageEvent.getUser() != null) {
                 String chatRoomId = messageEvent.getChannel().getName()
                         .substring(messageEvent.getChannel().getName().lastIndexOf(":") + 1);
 
-                eventManager.dispatchEvent(new ChatEvent(new EventUser(messageEvent.getTags()),
+                eventManager.dispatchEvent(new ChatEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
                         chatRoomList.stream().filter(room -> room.get_id().equals(chatRoomId)).findFirst().orElse(null),
                         chatRoomId, messageEvent.getMessage()));
             }
@@ -187,7 +187,7 @@ public class TwitchAPIController implements Listener {
             UnknownEvent unknownEvent = (UnknownEvent) event;
             switch (unknownEvent.getCommand()) {
                 case "WHISPER":
-                    eventManager.dispatchEvent(new WhisperEvent(new EventUser(unknownEvent.getTags()),
+                    eventManager.dispatchEvent(new WhisperEvent(new EventUser(unknownEvent.getTags(), unknownEvent.getNick()),
                             unknownEvent.getTarget(), unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1)));
                     break;
                 case "USERNOTICE":
