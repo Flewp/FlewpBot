@@ -13,19 +13,19 @@ public class SubscribeEvent extends Event {
     private int months;
     private String subPlan;
 
-    public static SubscribeEvent parse(Map<String, String> tags, String message) {
+    public static SubscribeEvent parse(Map<String, String> tags, String message, String name) {
         if (!isSubscribeEvent(tags)) {
             return null;
         }
 
-        return new SubscribeEvent(tags, message);
+        return new SubscribeEvent(tags, message, name);
     }
 
-    private SubscribeEvent(Map<String, String> tags, String message) {
+    private SubscribeEvent(Map<String, String> tags, String message, String name) {
         this.message = message;
 
         type = Type.stringToType(tags.get("msg-id"));
-        eventUser = new EventUser(tags);
+        eventUser = new EventUser(tags, name);
         subPlan = tags.getOrDefault("msg-param-sub-plan", "");
 
         switch (type.category) {
