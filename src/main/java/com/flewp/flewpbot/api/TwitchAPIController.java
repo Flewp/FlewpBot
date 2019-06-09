@@ -193,7 +193,7 @@ public class TwitchAPIController implements Listener {
                 case "USERNOTICE":
                     SubscribeEvent subscribeEvent = SubscribeEvent.parse(unknownEvent.getTags(),
                             (unknownEvent.getParsedLine() == null || unknownEvent.getParsedLine().isEmpty()) ? "" :
-                                    unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1), unknownEvent.getNick());
+                                    unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1), unknownEvent.getTags().get("login"));
 
                     if (subscribeEvent != null) {
                         eventManager.dispatchEvent(subscribeEvent);
