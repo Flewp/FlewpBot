@@ -168,14 +168,18 @@ public class TwitchAPIController implements Listener {
             LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has successfully connected to chat.");
         } else if (event instanceof MessageEvent) {
             MessageEvent messageEvent = (MessageEvent) event;
-            if (messageEvent.getTags().containsKey("bits") && messageEvent.getUser() != null) {
+            if (messageEvent.getTags() == null || messageEvent.getUser() == null || messageEvent.getUser().getNick() == null) {
+                return;
+            }
+
+            if (messageEvent.getTags().containsKey("bits")) {
                 try {
                     eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
                             messageEvent.getMessage(), Integer.parseInt(messageEvent.getTags().get("bits"))));
                 } catch (Exception e) {
                     LoggerFactory.getLogger(TwitchAPIController.class).error("Error in parsing bits: ", e);
                 }
-            } else if (messageEvent.getUser() != null) {
+            } else if (messageEvent.getChannel() != null && messageEvent.getChannel().getName() != null) {
                 String chatRoomId = messageEvent.getChannel().getName()
                         .substring(messageEvent.getChannel().getName().lastIndexOf(":") + 1);
 
@@ -185,6 +189,10 @@ public class TwitchAPIController implements Listener {
             }
         } else if (event instanceof UnknownEvent) {
             UnknownEvent unknownEvent = (UnknownEvent) event;
+            if (unknownEvent.getTags() == null || unknownEvent.getNick() == null || unknownEvent.getParsedLine() == null) {
+                return;
+            }
+
             switch (unknownEvent.getCommand()) {
                 case "WHISPER":
                     eventManager.dispatchEvent(new WhisperEvent(new EventUser(unknownEvent.getTags(), unknownEvent.getNick()),
