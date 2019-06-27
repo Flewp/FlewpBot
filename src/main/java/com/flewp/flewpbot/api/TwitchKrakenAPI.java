@@ -10,6 +10,6 @@ public interface TwitchKrakenAPI {
     @GET("chat/{channelID}/rooms")
     Call<ChatRoomsResponse> chatRooms(@Path("channelID") String channelID);
 
-    @GET("channel")
-    Call<Channel> channel();
+    @GET("channels/{userID}")
+    Call<Channel> channel(@Path("userID") String userID);
 }
