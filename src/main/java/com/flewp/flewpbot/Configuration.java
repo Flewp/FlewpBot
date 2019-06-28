@@ -39,6 +39,18 @@ public class Configuration {
     public String streamLabsClientID;
     public String streamLabsClientSecret;
     public String streamLabsAppName;
+    public String streamLabsRedirectURI;
+
+    public String streamLabsAccessToken;
+    public String streamLabsRefreshToken;
+
+    public boolean webBrowserAvailable;
+
+    public boolean hasStreamlabsCredentials() {
+        return streamLabsAccessToken != null && !streamLabsAccessToken.isEmpty() &&
+                !streamLabsAccessToken.equalsIgnoreCase("empty") && streamLabsRefreshToken != null &&
+                !streamLabsRefreshToken.isEmpty() && !streamLabsRefreshToken.equalsIgnoreCase("empty");
+    }
 
     public void dumpFile() {
         try {

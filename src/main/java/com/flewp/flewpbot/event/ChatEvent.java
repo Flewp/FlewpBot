@@ -1,15 +1,15 @@
 package com.flewp.flewpbot.event;
 
-import com.flewp.flewpbot.model.ChatRoom;
+import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
 import com.github.philippheuer.events4j.domain.Event;
 
 public class ChatEvent extends Event {
     private EventUser eventUser;
-    private ChatRoom chatRoom;
+    private KrakenChatRoom chatRoom;
     private String chatRoomId;
     private String message;
 
-    public ChatEvent(EventUser eventUser, ChatRoom chatRoom, String chatRoomId, String message) {
+    public ChatEvent(EventUser eventUser, KrakenChatRoom chatRoom, String chatRoomId, String message) {
         this.eventUser = eventUser;
         this.chatRoom = chatRoom;
         this.chatRoomId = chatRoomId;
@@ -20,7 +20,7 @@ public class ChatEvent extends Event {
         return eventUser;
     }
 
-    public ChatRoom getChatRoom() {
+    public KrakenChatRoom getChatRoom() {
         return chatRoom;
     }
 

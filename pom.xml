@@ -85,14 +85,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.twitch4j</groupId>
-            <artifactId>twitch4j</artifactId>
-            <version>1.0.0-alpha.11</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.twitch4j</groupId>
-            <artifactId>streamlabs4j</artifactId>
-            <version>1.0.0-alpha.1-SNAPSHOT</version>
+            <groupId>com.github.philippheuer.events4j</groupId>
+            <artifactId>events4j</artifactId>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
@@ -112,17 +107,17 @@
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client</artifactId>
-            <version>1.23.0</version>
+            <version>1.30.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.oauth-client</groupId>
             <artifactId>google-oauth-client-jetty</artifactId>
-            <version>1.23.0</version>
+            <version>1.30.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
-            <version>1.23.0</version>
+            <version>1.30.1</version>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>
@@ -138,6 +133,17 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger</artifactId>
+            <version>2.23.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.dagger</groupId>
+            <artifactId>dagger-compiler</artifactId>
+            <version>2.23.2</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

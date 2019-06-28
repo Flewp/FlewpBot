@@ -1,17 +1,19 @@
-package com.flewp.flewpbot.model;
+package com.flewp.flewpbot.model.api;
+
+import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
 
 import java.util.List;
 
 public class ChatRoomsResponse {
-    private List<ChatRoom> rooms;
+    private List<KrakenChatRoom> rooms;
 
     private String _total;
 
-    public List<ChatRoom> getRooms() {
+    public List<KrakenChatRoom> getRooms() {
         return rooms;
     }
 
-    public void setRooms(List<ChatRoom> rooms) {
+    public void setRooms(List<KrakenChatRoom> rooms) {
         this.rooms = rooms;
     }
 

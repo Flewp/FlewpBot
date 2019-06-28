@@ -1,4 +1,4 @@
-package com.flewp.flewpbot.api;
+package com.flewp.flewpbot.model.api;
 
 public class RefreshTokenResponse {
     public boolean success;

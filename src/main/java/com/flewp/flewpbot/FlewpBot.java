@@ -1,44 +1,62 @@
 package com.flewp.flewpbot;
 
-import com.flewp.flewpbot.api.StreamlabsAPIController;
-import com.flewp.flewpbot.api.TwitchAPIController;
+import com.flewp.flewpbot.api.StreamlabsAPI;
+import com.flewp.flewpbot.api.TwitchHelixAPI;
 import com.flewp.flewpbot.api.TwitchKrakenAPI;
+import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
+import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.event.*;
-import com.flewp.flewpbot.model.ChatRoom;
+import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
 import com.github.philippheuer.events4j.EventManager;
-import com.github.twitch4j.TwitchClient;
-import com.github.twitch4j.streamlabs4j.StreamlabsClient;
 import org.pircbotx.PircBotX;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FlewpBot {
-    private TwitchAPIController twitchAPIController;
-    private StreamlabsAPIController streamlabsAPIController;
 
     private List<FlewpBotListener> listenerList = new ArrayList<>();
 
     private Configuration configuration;
 
+    @Inject
+    EventManager eventManager;
+
+    @Inject
+    TwitchHelixAPI twitchHelixAPI;
+
+    @Inject
+    TwitchKrakenAPI twitchKrakenAPI;
+
+    @Inject
+    StreamlabsAPI streamlabsAPI;
+
+    @Inject
+    TwitchAPIController twitchAPIController;
+
+    @Inject
+    StreamlabsAPIController streamlabsAPIController;
+
+
     public FlewpBot() {
         configuration = Configuration.getInstance();
 
-        EventManager eventManager = new EventManager();
+        DaggerFlewpBotComponent.builder()
+                .flewpBotModule(new FlewpBotModule(configuration))
+                .build().inject(this);
+
         eventManager.onEvent(WhisperEvent.class).subscribe(this::onWhisperMessage);
         eventManager.onEvent(ChatEvent.class).subscribe(this::onChatMessage);
         eventManager.onEvent(BitEvent.class).subscribe(this::onCheer);
         eventManager.onEvent(SubscribeEvent.class).subscribe(this::onSubscribe);
         eventManager.onEvent(NewDonationEvent.class).subscribe(this::onNewDonation);
-
-        twitchAPIController = new TwitchAPIController(configuration, eventManager);
-        streamlabsAPIController = new StreamlabsAPIController(configuration, eventManager);
     }
 
     synchronized public void start() {
-        twitchAPIController.connect();
-        streamlabsAPIController.connect();
+        twitchAPIController.startChatBot();
+        streamlabsAPIController.startQueryingDonations();
     }
 
     synchronized public void addListener(FlewpBotListener listener) {
@@ -80,23 +98,23 @@ public class FlewpBot {
         return twitchAPIController.getPircBotX();
     }
 
-    public TwitchClient getTwitchClient() {
-        return twitchAPIController.getTwitchClient();
+    public TwitchHelixAPI getTwitchHelixAPI() {
+        return twitchHelixAPI;
     }
 
     public TwitchKrakenAPI getTwitchKrakenAPI() {
-        return twitchAPIController.getTwitchKrakenAPI();
+        return twitchKrakenAPI;
     }
 
-    public StreamlabsClient getStreamlabsClient() {
-        return streamlabsAPIController.getStreamlabsClient();
+    public StreamlabsAPI getStreamlabsAPI() {
+        return streamlabsAPI;
     }
 
     public Configuration getConfiguration() {
         return configuration;
     }
 
-    public List<ChatRoom> getConnectedChatRooms() {
+    public List<KrakenChatRoom> getConnectedChatRooms() {
         return twitchAPIController.getChatRoomList();
     }
 
