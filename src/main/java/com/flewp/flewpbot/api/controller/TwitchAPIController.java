@@ -133,66 +133,71 @@ public class TwitchAPIController implements Listener {
     }
 
     @Override
-    public void onEvent(Event event) throws Exception {
-        if (event instanceof JoinEvent) {
-            if (joinedChatRooms) {
-                return;
-            }
-
-            joinedChatRooms = true;
-
-            if (chatRoomList != null && !chatRoomList.isEmpty()) {
-                for (KrakenChatRoom chatRoom : chatRoomList) {
-                    pircBotX.sendRaw().rawLine("JOIN #chatrooms:" + channelId + ":" + chatRoom._id);
+    public void onEvent(Event event) {
+        LoggerFactory.getLogger(TwitchAPIController.class).info("Received IRC Event: " + event.toString());
+        try {
+            if (event instanceof JoinEvent) {
+                if (joinedChatRooms) {
+                    return;
                 }
-            }
 
-            pircBotX.sendRaw().rawLine("CAP REQ :twitch.tv/tags twitch.tv/commands");
-            LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has successfully connected to chat.");
-        } else if (event instanceof MessageEvent) {
-            MessageEvent messageEvent = (MessageEvent) event;
-            if (messageEvent.getTags() == null || messageEvent.getUser() == null || messageEvent.getUser().getNick() == null) {
-                return;
-            }
+                joinedChatRooms = true;
 
-            if (messageEvent.getTags().containsKey("bits")) {
-                try {
-                    eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
-                            messageEvent.getMessage(), Integer.parseInt(messageEvent.getTags().get("bits"))));
-                } catch (Exception e) {
-                    LoggerFactory.getLogger(TwitchAPIController.class).error("Error in parsing bits: ", e);
-                }
-            } else if (messageEvent.getChannel() != null && messageEvent.getChannel().getName() != null) {
-                String chatRoomId = messageEvent.getChannel().getName()
-                        .substring(messageEvent.getChannel().getName().lastIndexOf(":") + 1);
-
-                eventManager.dispatchEvent(new ChatEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
-                        chatRoomList.stream().filter(room -> room._id.equals(chatRoomId)).findFirst().orElse(null),
-                        chatRoomId, messageEvent.getMessage()));
-            }
-        } else if (event instanceof UnknownEvent) {
-            UnknownEvent unknownEvent = (UnknownEvent) event;
-            if (unknownEvent.getTags() == null || unknownEvent.getNick() == null || unknownEvent.getParsedLine() == null) {
-                return;
-            }
-
-            switch (unknownEvent.getCommand()) {
-                case "WHISPER":
-                    eventManager.dispatchEvent(new WhisperEvent(new EventUser(unknownEvent.getTags(), unknownEvent.getNick()),
-                            unknownEvent.getTarget(), unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1)));
-                    break;
-                case "USERNOTICE":
-                    SubscribeEvent subscribeEvent = SubscribeEvent.parse(unknownEvent.getTags(),
-                            (unknownEvent.getParsedLine() == null || unknownEvent.getParsedLine().isEmpty()) ? "" :
-                                    unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1), unknownEvent.getTags().get("login"));
-
-                    if (subscribeEvent != null) {
-                        eventManager.dispatchEvent(subscribeEvent);
+                if (chatRoomList != null && !chatRoomList.isEmpty()) {
+                    for (KrakenChatRoom chatRoom : chatRoomList) {
+                        pircBotX.sendRaw().rawLine("JOIN #chatrooms:" + channelId + ":" + chatRoom._id);
                     }
-                    break;
+                }
+
+                pircBotX.sendRaw().rawLine("CAP REQ :twitch.tv/tags twitch.tv/commands");
+                LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has successfully connected to chat.");
+            } else if (event instanceof MessageEvent) {
+                MessageEvent messageEvent = (MessageEvent) event;
+                if (messageEvent.getTags() == null || messageEvent.getUser() == null || messageEvent.getUser().getNick() == null) {
+                    return;
+                }
+
+                if (messageEvent.getTags().containsKey("bits")) {
+                    try {
+                        eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
+                                messageEvent.getMessage(), Integer.parseInt(messageEvent.getTags().get("bits"))));
+                    } catch (Exception e) {
+                        LoggerFactory.getLogger(TwitchAPIController.class).error("Error in parsing bits: ", e);
+                    }
+                } else if (messageEvent.getChannel() != null && messageEvent.getChannel().getName() != null) {
+                    String chatRoomId = messageEvent.getChannel().getName()
+                            .substring(messageEvent.getChannel().getName().lastIndexOf(":") + 1);
+
+                    eventManager.dispatchEvent(new ChatEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
+                            chatRoomList.stream().filter(room -> room._id.equals(chatRoomId)).findFirst().orElse(null),
+                            chatRoomId, messageEvent.getMessage()));
+                }
+            } else if (event instanceof UnknownEvent) {
+                UnknownEvent unknownEvent = (UnknownEvent) event;
+                if (unknownEvent.getTags() == null || unknownEvent.getNick() == null || unknownEvent.getParsedLine() == null) {
+                    return;
+                }
+
+                switch (unknownEvent.getCommand()) {
+                    case "WHISPER":
+                        eventManager.dispatchEvent(new WhisperEvent(new EventUser(unknownEvent.getTags(), unknownEvent.getNick()),
+                                unknownEvent.getTarget(), unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1)));
+                        break;
+                    case "USERNOTICE":
+                        SubscribeEvent subscribeEvent = SubscribeEvent.parse(unknownEvent.getTags(),
+                                (unknownEvent.getParsedLine() == null || unknownEvent.getParsedLine().isEmpty()) ? "" :
+                                        unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1), unknownEvent.getTags().get("login"));
+
+                        if (subscribeEvent != null) {
+                            eventManager.dispatchEvent(subscribeEvent);
+                        }
+                        break;
+                }
+            } else if (event instanceof DisconnectEvent) {
+                LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has disconnected from chat.");
             }
-        } else if (event instanceof DisconnectEvent) {
-            LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has disconnected from chat.");
+        } catch (Exception e) {
+            LoggerFactory.getLogger(TwitchAPIController.class).info("Exception in FlewpBot: " + e.getMessage());
         }
     }
 
