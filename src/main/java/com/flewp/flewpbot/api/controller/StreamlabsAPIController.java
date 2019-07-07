@@ -148,12 +148,9 @@ public class StreamlabsAPIController {
                 return response.body().data;
             }
 
-            List<StreamlabsDonation> donations = response.body().data.subList(0, response.body().data.size());
-            Collections.reverse(donations);
+            previousDonation = Integer.parseInt(response.body().data.get(0).donation_id);
 
-            previousDonation = Integer.parseInt(donations.get(0).donation_id);
-
-            return donations;
+            return response.body().data;
         } catch (Exception e) {
             LoggerFactory.getLogger(StreamlabsAPIController.class).error("Unable to get donations from Streamlabs: " + e.getMessage());
         }
