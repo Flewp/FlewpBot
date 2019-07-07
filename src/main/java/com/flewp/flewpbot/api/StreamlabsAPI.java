@@ -10,6 +10,6 @@ import retrofit2.http.Query;
 public interface StreamlabsAPI {
 
     @GET("donations")
-    Call<GetDonationsResponse> getDonations(@Query("access_tokeN") String accessToken, @Query("after") Integer after,
+    Call<GetDonationsResponse> getDonations(@Query("access_token") String accessToken, @Query("after") Integer after,
                                             @Query("limit") Integer limit);
 }
