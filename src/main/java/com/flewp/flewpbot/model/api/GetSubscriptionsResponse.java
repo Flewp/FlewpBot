@@ -7,5 +7,5 @@ import java.util.List;
 
 public class GetSubscriptionsResponse {
     public List<HelixSubscription> data;
-    public HelixPagination cursor;
+    public HelixPagination pagination;
 }
