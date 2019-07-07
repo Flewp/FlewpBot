@@ -1,6 +1,7 @@
 package com.flewp.flewpbot.api;
 
 import com.flewp.flewpbot.model.api.GetFollowsResponse;
+import com.flewp.flewpbot.model.api.GetSubscriptionsResponse;
 import com.flewp.flewpbot.model.api.GetUsersResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -14,4 +15,7 @@ public interface TwitchHelixAPI {
 
     @GET("users/follows")
     Call<GetFollowsResponse> getFollows(@Query("from_id") String from_id, @Query("to_id") String to_id);
+
+    @GET("subscriptions")
+    Call<GetSubscriptionsResponse> getSubscriptions(@Query("broadcaster_id") String broadcaster_id, @Query("after") String cursor);
 }
