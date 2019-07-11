@@ -1,5 +1,6 @@
 package com.flewp.flewpbot;
 
+import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.StreamlabsAPI;
 import com.flewp.flewpbot.api.TwitchHelixAPI;
 import com.flewp.flewpbot.api.TwitchKrakenAPI;
@@ -16,10 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FlewpBot {
-
-    private List<FlewpBotListener> listenerList = new ArrayList<>();
-
     private Configuration configuration;
+    private List<FlewpBotListener> listenerList = new ArrayList<>();
 
     @Inject
     EventManager eventManager;
@@ -34,11 +33,13 @@ public class FlewpBot {
     StreamlabsAPI streamlabsAPI;
 
     @Inject
+    JamisphereAPI jamisphereAPI;
+
+    @Inject
     TwitchAPIController twitchAPIController;
 
     @Inject
     StreamlabsAPIController streamlabsAPIController;
-
 
     public FlewpBot() {
         configuration = Configuration.getInstance();
@@ -108,6 +109,10 @@ public class FlewpBot {
 
     public StreamlabsAPI getStreamlabsAPI() {
         return streamlabsAPI;
+    }
+
+    public JamisphereAPI getJamisphereAPI() {
+        return jamisphereAPI;
     }
 
     public Configuration getConfiguration() {

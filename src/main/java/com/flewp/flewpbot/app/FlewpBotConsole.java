@@ -9,7 +9,8 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
     public static void main(String[] args) {
         FlewpBot flewpBot = new FlewpBot();
         flewpBot.addListener(new ConsoleListener());
-        flewpBot.start();
+        flewpBot.startChatBot();
+        flewpBot.startQueryingDonations();
     }
 
     private static class ConsoleListener implements FlewpBotListener {
