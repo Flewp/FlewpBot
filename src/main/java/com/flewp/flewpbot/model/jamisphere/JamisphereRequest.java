@@ -2,6 +2,7 @@ package com.flewp.flewpbot.model.jamisphere;
 
 public class JamisphereRequest {
     public Boolean inList;
+    public Boolean playing;
     public Integer status; // 1 regular, 2 vip
     public Integer likes;
 

@@ -8,26 +8,26 @@ import retrofit2.http.POST;
 
 public interface JamisphereAPI {
     @POST("request/behalf")
-    Call<EmptyResponse> requestBehalf(@Body JamisphereRequestBehalfBody body);
+    Call<JamisphereRequestResponse> requestBehalf(@Body JamisphereRequestBehalfBody body);
 
     @POST("request/remove/behalf")
-    Call<EmptyResponse> requestRemoveBehalf(@Body JamisphereRequestRemoveBehalfBody body);
+    Call<JamisphereBaseResponse> requestRemoveBehalf(@Body JamisphereRequestRemoveBehalfBody body);
 
     @POST("request/play")
-    Call<EmptyResponse> requestPlay(@Body JamisphereRequestPlayBody body);
+    Call<JamisphereRequestResponse> requestPlay(@Body JamisphereRequestPlayBody body);
 
     @POST("request/list/clear")
-    Call<EmptyResponse> listClear();
+    Call<JamisphereBaseResponse> listClear();
 
     @GET("request/list")
-    Call<EmptyResponse> requestList();
+    Call<JamisphereRequestListResponse> requestList();
 
     @POST("guessinggame/answer")
-    Call<EmptyResponse> guessingGameAnswer(@Body JamisphereGuessingGameAnswerBody body);
+    Call<JamisphereBaseResponse> guessingGameAnswer(@Body JamisphereGuessingGameAnswerBody body);
 
     @POST("guessinggame/start")
-    Call<EmptyResponse> guessingGameStart();
+    Call<JamisphereBaseResponse> guessingGameStart();
 
     @POST("guessinggame/guess/behalf")
-    Call<EmptyResponse> guessingGameGuessBehalf(@Body JamisphereGuessingGameGuessBehalfBody body);
+    Call<JamisphereBaseResponse> guessingGameGuessBehalf(@Body JamisphereGuessingGameGuessBehalfBody body);
 }
