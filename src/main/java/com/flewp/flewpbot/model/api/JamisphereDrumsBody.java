@@ -14,5 +14,10 @@ public class JamisphereDrumsBody {
     public static class Hit {
         public int midi;
         public long timestamp;
+
+        public Hit(int midi, long timestamp) {
+            this.midi = midi;
+            this.timestamp = timestamp;
+        }
     }
 }
