@@ -16,6 +16,9 @@ public interface JamisphereAPI {
     @POST("request/play")
     Call<JamisphereRequestResponse> requestPlay(@Body JamisphereRequestPlayBody body);
 
+    @GET("request/current")
+    Call<JamisphereRequestResponse> requestCurrent();
+
     @POST("request/list/clear")
     Call<JamisphereBaseResponse> listClear();
 
@@ -30,4 +33,7 @@ public interface JamisphereAPI {
 
     @POST("guessinggame/guess/behalf")
     Call<JamisphereBaseResponse> guessingGameGuessBehalf(@Body JamisphereGuessingGameGuessBehalfBody body);
+
+    @POST("drums")
+    Call<JamisphereBaseResponse> drums(@Body JamisphereDrumsBody body);
 }
