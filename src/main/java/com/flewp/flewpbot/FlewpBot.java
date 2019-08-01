@@ -9,7 +9,6 @@ import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.event.*;
 import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
 import com.github.philippheuer.events4j.EventManager;
-import org.pircbotx.PircBotX;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
@@ -95,8 +94,12 @@ public class FlewpBot {
         listenerList.forEach(listener -> listener.onWhisperMessage(whisperEvent));
     }
 
-    public PircBotX getPircBotX() {
-        return twitchAPIController.getPircBotX();
+    synchronized public void sendMessage(String channel, String message) {
+        twitchAPIController.getIrcClient().sendMessage(channel, message);
+    }
+
+    synchronized public void sendWhisper(String userName, String message) {
+        twitchAPIController.getIrcClient().sendMessage("#jtv", "/w " + userName + ' ' + message);
     }
 
     public TwitchHelixAPI getTwitchHelixAPI() {

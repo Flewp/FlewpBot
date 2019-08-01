@@ -6,8 +6,9 @@ import com.flewp.flewpbot.FlewpBotListenerAdapter;
 import com.flewp.flewpbot.event.*;
 
 class FlewpBotConsole extends FlewpBotListenerAdapter {
+    static FlewpBot flewpBot;
     public static void main(String[] args) {
-        FlewpBot flewpBot = new FlewpBot();
+        flewpBot = new FlewpBot();
         flewpBot.addListener(new ConsoleListener());
         flewpBot.start();
     }

@@ -7,12 +7,14 @@ public class ChatEvent extends Event {
     private EventUser eventUser;
     private KrakenChatRoom chatRoom;
     private String chatRoomId;
+    private String chatRoomIrcId;
     private String message;
 
-    public ChatEvent(EventUser eventUser, KrakenChatRoom chatRoom, String chatRoomId, String message) {
+    public ChatEvent(EventUser eventUser, KrakenChatRoom chatRoom, String chatRoomId, String chatRoomIrcId, String message) {
         this.eventUser = eventUser;
         this.chatRoom = chatRoom;
         this.chatRoomId = chatRoomId;
+        this.chatRoomIrcId = chatRoomIrcId;
         this.message = message;
     }
 
@@ -26,6 +28,10 @@ public class ChatEvent extends Event {
 
     public String getChatRoomId() {
         return chatRoomId;
+    }
+
+    public String getChatRoomIrcId() {
+        return chatRoomIrcId;
     }
 
     public String getMessage() {
