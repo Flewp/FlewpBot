@@ -10,6 +10,9 @@ public interface JamisphereAPI {
     @POST("request/behalf")
     Call<JamisphereRequestResponse> requestBehalf(@Body JamisphereRequestBehalfBody body);
 
+    @POST("request/upgrade/behalf")
+    Call<JamisphereRequestResponse> requestUpgradeBehalf(@Body JamisphereRequestUpgradeBehalfBody body);
+
     @POST("request/remove/behalf")
     Call<JamisphereBaseResponse> requestRemoveBehalf(@Body JamisphereRequestRemoveBehalfBody body);
 
