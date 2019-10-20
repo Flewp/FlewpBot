@@ -29,10 +29,10 @@ public interface JamisphereAPI {
     Call<JamisphereRequestListResponse> requestList();
 
     @POST("guessinggame/answer")
-    Call<JamisphereBaseResponse> guessingGameAnswer(@Body JamisphereGuessingGameAnswerBody body);
+    Call<JamisphereGuessingGameAnswerResponse> guessingGameAnswer(@Body JamisphereGuessingGameAnswerBody body);
 
     @POST("guessinggame/start")
-    Call<JamisphereBaseResponse> guessingGameStart();
+    Call<JamisphereGuessingGameStartResponse> guessingGameStart();
 
     @POST("guessinggame/guess/behalf")
     Call<JamisphereBaseResponse> guessingGameGuessBehalf(@Body JamisphereGuessingGameGuessBehalfBody body);
