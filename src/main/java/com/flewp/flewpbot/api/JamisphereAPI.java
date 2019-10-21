@@ -32,7 +32,7 @@ public interface JamisphereAPI {
     Call<JamisphereGuessingGameAnswerResponse> guessingGameAnswer(@Body JamisphereGuessingGameAnswerBody body);
 
     @POST("guessinggame/start")
-    Call<JamisphereGuessingGameStartResponse> guessingGameStart();
+    Call<JamisphereGuessingGameStartResponse> guessingGameStart(@Body JamisphereGuessingGameStartBody body);
 
     @POST("guessinggame/guess/behalf")
     Call<JamisphereBaseResponse> guessingGameGuessBehalf(@Body JamisphereGuessingGameGuessBehalfBody body);
