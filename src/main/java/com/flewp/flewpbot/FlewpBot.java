@@ -6,8 +6,10 @@ import com.flewp.flewpbot.api.TwitchHelixAPI;
 import com.flewp.flewpbot.api.TwitchKrakenAPI;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
-import com.flewp.flewpbot.event.*;
+import com.flewp.flewpbot.model.events.jamisphere.*;
+import com.flewp.flewpbot.model.events.twitch.*;
 import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
+import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,9 @@ public class FlewpBot {
     @Inject
     StreamlabsAPIController streamlabsAPIController;
 
+    @Inject
+    PusherManager pusherManager;
+
     public FlewpBot() {
         configuration = Configuration.getInstance();
 
@@ -57,6 +62,7 @@ public class FlewpBot {
     synchronized public void start() {
         twitchAPIController.startChatBot();
         streamlabsAPIController.startQueryingDonations();
+        pusherManager.connect();
     }
 
     synchronized public void addListener(FlewpBotListener listener) {
@@ -92,6 +98,51 @@ public class FlewpBot {
     synchronized private void onWhisperMessage(WhisperEvent whisperEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(whisperEvent.toString());
         listenerList.forEach(listener -> listener.onWhisperMessage(whisperEvent));
+    }
+
+    synchronized private void onGuessingGameAnswered(GuessingGameAnsweredEvent guessingGameAnsweredEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(guessingGameAnsweredEvent.toString());
+        listenerList.forEach(listener -> listener.onGuessingGameAnswered(guessingGameAnsweredEvent));
+    }
+
+    synchronized private void onGuessingGameStarted(GuessingGameStartedEvent guessingGameStartedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(guessingGameStartedEvent.toString());
+        listenerList.forEach(listener -> listener.onGuessingGameStarted(guessingGameStartedEvent));
+    }
+
+    synchronized private void onRequestAdded(RequestAddedEvent requestAddedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestAddedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestAdded(requestAddedEvent));
+    }
+
+    synchronized private void onRequestLiked(RequestLikedEvent requestLikedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestLikedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestLiked(requestLikedEvent));
+    }
+
+    synchronized private void onRequestListCleared(RequestListClearedEvent requestListClearedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestListClearedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestListCleared(requestListClearedEvent));
+    }
+
+    synchronized private void onRequestPlayed(RequestPlayedEvent requestPlayedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestPlayedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestPlayed(requestPlayedEvent));
+    }
+
+    synchronized private void onRequestRemoved(RequestRemovedEvent requestRemovedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestRemovedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestRemoved(requestRemovedEvent));
+    }
+
+    synchronized private void onRequestUnliked(RequestUnlikedEvent requestUnlikedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestUnlikedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestUnliked(requestUnlikedEvent));
+    }
+
+    synchronized private void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestUpgradedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestUpgraded(requestUpgradedEvent));
     }
 
     synchronized public void sendMessage(String channel, String message) {

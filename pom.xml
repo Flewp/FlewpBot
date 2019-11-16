@@ -150,5 +150,10 @@
             <version>2.23.2</version>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.pusher</groupId>
+            <artifactId>pusher-java-client</artifactId>
+            <version>2.0.2</version>
+        </dependency>
     </dependencies>
 </project>

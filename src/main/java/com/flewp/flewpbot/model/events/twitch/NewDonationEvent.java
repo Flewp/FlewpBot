@@ -1,4 +1,4 @@
-package com.flewp.flewpbot.event;
+package com.flewp.flewpbot.model.events.twitch;
 
 import com.flewp.flewpbot.model.streamlabs.StreamlabsDonation;
 import com.github.philippheuer.events4j.domain.Event;

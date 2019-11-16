@@ -1,4 +1,4 @@
-package com.flewp.flewpbot.event;
+package com.flewp.flewpbot.model.events.twitch;
 
 import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
 import com.github.philippheuer.events4j.domain.Event;

@@ -13,6 +13,7 @@ import com.flewp.flewpbot.api.interceptor.JamisphereRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.StreamlabsRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.TwitchHelixRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.TwitchKrakenRequestInterceptor;
+import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import dagger.Module;
 import dagger.Provides;
@@ -164,5 +165,11 @@ class FlewpBotModule {
     public StreamlabsAPIController provideStreamlabsAPIController(Configuration configuration, EventManager eventManager,
                                                                   StreamlabsAPI streamlabsAPI) {
         return new StreamlabsAPIController(configuration, eventManager, streamlabsAPI);
+    }
+
+    @Provides
+    @Singleton
+    public PusherManager providePusherManager(Configuration configuration, EventManager eventManager) {
+        return new PusherManager(configuration, eventManager);
     }
 }

@@ -1,6 +1,7 @@
 package com.flewp.flewpbot;
 
-import com.flewp.flewpbot.event.*;
+import com.flewp.flewpbot.model.events.jamisphere.*;
+import com.flewp.flewpbot.model.events.twitch.*;
 
 public class FlewpBotListenerAdapter implements FlewpBotListener {
 
@@ -26,6 +27,51 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
 
     @Override
     public void onNewDonation(NewDonationEvent newDonationEvent) {
+
+    }
+
+    @Override
+    public void onGuessingGameAnswered(GuessingGameAnsweredEvent guessingGameAnsweredEvent) {
+
+    }
+
+    @Override
+    public void onGuessingGameStarted(GuessingGameStartedEvent guessingGameStartedEvent) {
+
+    }
+
+    @Override
+    public void onRequestAdded(RequestAddedEvent requestAddedEvent) {
+
+    }
+
+    @Override
+    public void onRequestLiked(RequestLikedEvent requestLikedEvent) {
+
+    }
+
+    @Override
+    public void onRequestListCleared(RequestListClearedEvent requestListClearedEvent) {
+
+    }
+
+    @Override
+    public void onRequestPlayed(RequestPlayedEvent requestPlayedEvent) {
+
+    }
+
+    @Override
+    public void onRequestRemoved(RequestRemovedEvent requestRemovedEvent) {
+
+    }
+
+    @Override
+    public void onRequestUnliked(RequestUnlikedEvent requestUnlikedEvent) {
+
+    }
+
+    @Override
+    public void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent) {
 
     }
 }

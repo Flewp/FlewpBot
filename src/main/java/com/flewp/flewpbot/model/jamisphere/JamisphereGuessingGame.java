@@ -6,4 +6,5 @@ public class JamisphereGuessingGame {
     public String description;
     public Long startsAt;
     public Long expiresAt;
+    public Integer answer;
 }

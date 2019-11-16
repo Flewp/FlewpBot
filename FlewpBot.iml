@@ -84,5 +84,7 @@
     <orderEntry type="library" name="Maven: javax.annotation:jsr250-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: net.ltgt.gradle.incap:incap:0.2" level="project" />
     <orderEntry type="library" name="Maven: org.checkerframework:checker-compat-qual:2.5.3" level="project" />
+    <orderEntry type="library" name="Maven: com.pusher:pusher-java-client:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.java-websocket:Java-WebSocket:1.4.0" level="project" />
   </component>
 </module>

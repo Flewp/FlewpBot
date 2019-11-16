@@ -1,4 +1,4 @@
-package com.flewp.flewpbot.event;
+package com.flewp.flewpbot.model.events.twitch;
 
 import java.util.*;
 import java.util.stream.Collectors;

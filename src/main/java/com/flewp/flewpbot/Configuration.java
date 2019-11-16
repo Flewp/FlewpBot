@@ -18,7 +18,6 @@ public class Configuration {
             } catch (IOException e) {
             }
         }
-
         if (configuration == null) {
             throw new RuntimeException("Create a config.yaml based off the config-template.yaml and fill in the fields: looking in " + file.getAbsolutePath());
         }
@@ -44,7 +43,11 @@ public class Configuration {
     public String streamLabsAccessToken;
     public String streamLabsRefreshToken;
 
+    public String pusherKey;
+    public String pusherCluster;
+
     public boolean webBrowserAvailable;
+    public boolean enableIrc;
 
     public boolean hasStreamlabsCredentials() {
         return streamLabsAccessToken != null && !streamLabsAccessToken.isEmpty() &&

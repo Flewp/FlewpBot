@@ -3,7 +3,7 @@ package com.flewp.flewpbot.api.controller;
 import com.flewp.flewpbot.Configuration;
 import com.flewp.flewpbot.api.StreamlabsAPI;
 import com.flewp.flewpbot.api.StreamlabsTokenAPI;
-import com.flewp.flewpbot.event.NewDonationEvent;
+import com.flewp.flewpbot.model.events.twitch.NewDonationEvent;
 import com.flewp.flewpbot.model.api.GetDonationsResponse;
 import com.flewp.flewpbot.model.api.RefreshStreamlabsTokenResponse;
 import com.flewp.flewpbot.model.streamlabs.StreamlabsDonation;
