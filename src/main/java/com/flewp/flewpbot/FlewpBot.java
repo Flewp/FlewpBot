@@ -57,6 +57,15 @@ public class FlewpBot {
         eventManager.onEvent(BitEvent.class).subscribe(this::onCheer);
         eventManager.onEvent(SubscribeEvent.class).subscribe(this::onSubscribe);
         eventManager.onEvent(NewDonationEvent.class).subscribe(this::onNewDonation);
+        eventManager.onEvent(GuessingGameAnsweredEvent.class).subscribe(this::onGuessingGameAnswered);
+        eventManager.onEvent(GuessingGameStartedEvent.class).subscribe(this::onGuessingGameStarted);
+        eventManager.onEvent(RequestAddedEvent.class).subscribe(this::onRequestAdded);
+        eventManager.onEvent(RequestLikedEvent.class).subscribe(this::onRequestLiked);
+        eventManager.onEvent(RequestListClearedEvent.class).subscribe(this::onRequestListCleared);
+        eventManager.onEvent(RequestPlayedEvent.class).subscribe(this::onRequestPlayed);
+        eventManager.onEvent(RequestRemovedEvent.class).subscribe(this::onRequestRemoved);
+        eventManager.onEvent(RequestUnlikedEvent.class).subscribe(this::onRequestUnliked);
+        eventManager.onEvent(RequestUpgradedEvent.class).subscribe(this::onRequestUpgraded);
     }
 
     synchronized public void start() {

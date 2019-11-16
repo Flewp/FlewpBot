@@ -18,72 +18,72 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
 
         @Override
         public void onWhisperMessage(WhisperEvent whisperEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onChatMessage(ChatEvent chatEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onCheer(BitEvent bitEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onSubscribe(SubscribeEvent subscribeEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onNewDonation(NewDonationEvent newDonationEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onGuessingGameAnswered(GuessingGameAnsweredEvent guessingGameAnsweredEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onGuessingGameStarted(GuessingGameStartedEvent guessingGameStartedEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onRequestAdded(RequestAddedEvent requestAddedEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onRequestLiked(RequestLikedEvent requestLikedEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onRequestListCleared(RequestListClearedEvent requestListClearedEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onRequestPlayed(RequestPlayedEvent requestPlayedEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onRequestRemoved(RequestRemovedEvent requestRemovedEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onRequestUnliked(RequestUnlikedEvent requestUnlikedEvent) {
-
+            int i = 0;
         }
 
         @Override
         public void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent) {
-
+            int i = 0;
         }
     }
 }

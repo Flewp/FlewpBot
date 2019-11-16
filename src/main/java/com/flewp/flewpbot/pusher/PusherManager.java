@@ -24,9 +24,6 @@ public class PusherManager {
 
         PusherOptions options = new PusherOptions().setCluster(configuration.pusherCluster);
         pusher = new Pusher(configuration.pusherKey, options);
-
-        Channel channel = pusher.subscribe(JAMISPHERE_EVENT);
-
     }
 
     public void connect() {
@@ -62,5 +59,7 @@ public class PusherManager {
         channel.bind("requestUpgraded", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestUpgradedEvent.class));
         });
+
+        pusher.connect();
     }
 }
