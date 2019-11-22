@@ -1,6 +1,6 @@
 package com.flewp.flewpbot.model.jamisphere;
 
-public class JamisphereRequest {
+public class JamisphereRequest implements Comparable<JamisphereRequest> {
     public String requestId;
 
     public Boolean inList;
@@ -19,4 +19,13 @@ public class JamisphereRequest {
 
     public String timePlayed; // ISO String of time played
     public Long streamUptimePlayed; // Time in milliseconds that the stream has been live when played
+
+    @Override
+    public int compareTo(JamisphereRequest o) {
+        if (status != null && o.status != null && !status.equals(o.status)) {
+            return status.compareTo(o.status);
+        }
+
+        return requestId.compareTo(o.requestId);
+    }
 }
