@@ -138,8 +138,7 @@ public class TwitchAPIController {
         } else {
             String chatRoomId = event.getParameters().get(0).substring(event.getParameters().get(0).indexOf(":") + 1);
             eventManager.dispatchEvent(new ChatEvent(new EventUser(messageTagsToMap(event.getTags()),
-                    ((DefaultUser) event.getActor()).getNick()), chatRoomId,
-                    event.getParameters().get(0), event.getParameters().get(1)));
+                    ((DefaultUser) event.getActor()).getNick()), chatRoomId, event.getParameters().get(1)));
         }
     }
 

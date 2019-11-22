@@ -5,13 +5,11 @@ import com.github.philippheuer.events4j.domain.Event;
 public class ChatEvent extends Event {
     private EventUser eventUser;
     private String chatRoomId;
-    private String chatRoomIrcId;
     private String message;
 
-    public ChatEvent(EventUser eventUser, String chatRoomId, String chatRoomIrcId, String message) {
+    public ChatEvent(EventUser eventUser, String chatRoomId, String message) {
         this.eventUser = eventUser;
         this.chatRoomId = chatRoomId;
-        this.chatRoomIrcId = chatRoomIrcId;
         this.message = message;
     }
 
@@ -21,10 +19,6 @@ public class ChatEvent extends Event {
 
     public String getChatRoomId() {
         return chatRoomId;
-    }
-
-    public String getChatRoomIrcId() {
-        return chatRoomIrcId;
     }
 
     public String getMessage() {
