@@ -69,7 +69,9 @@ public class FlewpBot {
     }
 
     synchronized public void start() {
-        twitchAPIController.startChatBot();
+        if (configuration.enableIrc) {
+            twitchAPIController.startChatBot();
+        }
         streamlabsAPIController.startQueryingDonations();
         pusherManager.connect();
     }
@@ -155,11 +157,17 @@ public class FlewpBot {
     }
 
     synchronized public void sendMessage(String channel, String message) {
-        twitchAPIController.getIrcClient().sendMessage(channel, message);
+        if (twitchAPIController != null) {
+            twitchAPIController.getIrcClient().sendMessage(channel, message);
+        } else {
+            throw new IllegalStateException("You must set enableIrc to true in order to use this function");
+        }
     }
 
     synchronized public void sendWhisper(String userName, String message) {
-        twitchAPIController.getIrcClient().sendMessage("#jtv", "/w " + userName + ' ' + message);
+        if (twitchAPIController != null) {
+            twitchAPIController.getIrcClient().sendMessage("#jtv", "/w " + userName + ' ' + message);
+        }
     }
 
     public TwitchHelixAPI getTwitchHelixAPI() {
@@ -183,14 +191,26 @@ public class FlewpBot {
     }
 
     public List<KrakenChatRoom> getConnectedChatRooms() {
-        return twitchAPIController.getChatRoomList();
+        if (twitchAPIController != null) {
+            return twitchAPIController.getChatRoomList();
+        } else {
+            throw new IllegalStateException("You must set enableIrc to true in order to use this function");
+        }
     }
 
     public String getStreamerUserId() {
-        return twitchAPIController.getStreamerUserId();
+        if (twitchAPIController != null) {
+            return twitchAPIController.getStreamerUserId();
+        } else {
+            throw new IllegalStateException("You must set enableIrc to true in order to use this function");
+        }
     }
 
     public String getStreamerChannelId() {
-        return twitchAPIController.getStreamerChannelId();
+        if (twitchAPIController != null) {
+            return twitchAPIController.getStreamerChannelId();
+        } else {
+            throw new IllegalStateException("You must set enableIrc to true in order to use this function");
+        }
     }
 }
