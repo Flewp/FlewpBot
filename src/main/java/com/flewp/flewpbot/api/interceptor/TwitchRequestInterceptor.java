@@ -6,10 +6,10 @@ import okhttp3.Response;
 
 import java.io.IOException;
 
-public class TwitchHelixRequestInterceptor implements Interceptor {
+public class TwitchRequestInterceptor implements Interceptor {
     private Configuration configuration;
 
-    public TwitchHelixRequestInterceptor(Configuration configuration) {
+    public TwitchRequestInterceptor(Configuration configuration) {
         this.configuration = configuration;
     }
 

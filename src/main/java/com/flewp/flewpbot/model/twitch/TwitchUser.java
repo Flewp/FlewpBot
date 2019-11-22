@@ -1,6 +1,6 @@
-package com.flewp.flewpbot.model.helix;
+package com.flewp.flewpbot.model.twitch;
 
-public class HelixUser {
+public class TwitchUser {
     public String id;
     public String login;
     public String display_name;

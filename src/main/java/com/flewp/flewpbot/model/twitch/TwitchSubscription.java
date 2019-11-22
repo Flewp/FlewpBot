@@ -1,6 +1,6 @@
-package com.flewp.flewpbot.model.helix;
+package com.flewp.flewpbot.model.twitch;
 
-public class HelixSubscription {
+public class TwitchSubscription {
     public String broadcaster_id;
     public String broadcaster_name;
     public Boolean is_gift;

@@ -2,17 +2,14 @@ package com.flewp.flewpbot;
 
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.StreamlabsAPI;
-import com.flewp.flewpbot.api.TwitchHelixAPI;
-import com.flewp.flewpbot.api.TwitchKrakenAPI;
+import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.authenticator.StreamlabsAuthenticator;
-import com.flewp.flewpbot.api.authenticator.TwitchHelixAuthenticator;
-import com.flewp.flewpbot.api.authenticator.TwitchKrakenAuthenticator;
+import com.flewp.flewpbot.api.authenticator.TwitchAuthenticator;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.api.interceptor.JamisphereRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.StreamlabsRequestInterceptor;
-import com.flewp.flewpbot.api.interceptor.TwitchHelixRequestInterceptor;
-import com.flewp.flewpbot.api.interceptor.TwitchKrakenRequestInterceptor;
+import com.flewp.flewpbot.api.interceptor.TwitchRequestInterceptor;
 import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import dagger.Module;
@@ -52,14 +49,8 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchHelixRequestInterceptor provideTwitchHelixRequestInterceptor(Configuration configuration) {
-        return new TwitchHelixRequestInterceptor(configuration);
-    }
-
-    @Provides
-    @Singleton
-    public TwitchKrakenRequestInterceptor provideTwitchKrakenRequestInterceptor(Configuration configuration) {
-        return new TwitchKrakenRequestInterceptor(configuration);
+    public TwitchRequestInterceptor provideTwitchRequestInterceptor(Configuration configuration) {
+        return new TwitchRequestInterceptor(configuration);
     }
 
     @Provides
@@ -76,14 +67,8 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchHelixAuthenticator provideTwitchHelixAuthenticator(Configuration configuration) {
-        return new TwitchHelixAuthenticator(configuration);
-    }
-
-    @Provides
-    @Singleton
-    public TwitchKrakenAuthenticator provideTwitchKrakenAuthenticator(Configuration configuration) {
-        return new TwitchKrakenAuthenticator(configuration);
+    public TwitchAuthenticator provideTwitchAuthenticator(Configuration configuration) {
+        return new TwitchAuthenticator(configuration);
     }
 
     @Provides
@@ -94,9 +79,9 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchHelixAPI provideTwitchHelixAPI(OkHttpClient okHttpClient,
-                                                TwitchHelixRequestInterceptor requestInterceptor,
-                                                TwitchHelixAuthenticator authenticator) {
+    public TwitchAPI provideTwitchAPI(OkHttpClient okHttpClient,
+                                           TwitchRequestInterceptor requestInterceptor,
+                                           TwitchAuthenticator authenticator) {
         return new Retrofit.Builder()
                 .baseUrl("https://api.twitch.tv/helix/")
                 .client(okHttpClient.newBuilder()
@@ -105,23 +90,7 @@ class FlewpBotModule {
                         .build())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .build().create(TwitchHelixAPI.class);
-    }
-
-    @Provides
-    @Singleton
-    public TwitchKrakenAPI provideTwitchKrakenAPI(OkHttpClient okHttpClient,
-                                                  TwitchKrakenRequestInterceptor requestInterceptor,
-                                                  TwitchKrakenAuthenticator authenticator) {
-        return new Retrofit.Builder()
-                .baseUrl("https://api.twitch.tv/kraken/")
-                .client(okHttpClient.newBuilder()
-                        .addInterceptor(requestInterceptor)
-                        .authenticator(authenticator)
-                        .build())
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build().create(TwitchKrakenAPI.class);
+                .build().create(TwitchAPI.class);
     }
 
     @Provides
@@ -155,9 +124,8 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager,
-                                                          TwitchKrakenAPI twitchKrakenAPI, TwitchHelixAPI twitchHelixAPI) {
-        return new TwitchAPIController(configuration, eventManager, twitchKrakenAPI, twitchHelixAPI);
+    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI) {
+        return new TwitchAPIController(configuration, eventManager, twitchAPI);
     }
 
     @Provides

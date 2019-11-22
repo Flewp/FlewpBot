@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 import java.util.List;
 
-public interface TwitchHelixAPI {
+public interface TwitchAPI {
     @GET("users")
     Call<GetUsersResponse> getUsers(@Query("id") List<String> id, @Query("login") List<String> login);
 

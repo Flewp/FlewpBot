@@ -2,13 +2,11 @@ package com.flewp.flewpbot;
 
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.StreamlabsAPI;
-import com.flewp.flewpbot.api.TwitchHelixAPI;
-import com.flewp.flewpbot.api.TwitchKrakenAPI;
+import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
-import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
 import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import org.slf4j.LoggerFactory;
@@ -25,10 +23,7 @@ public class FlewpBot {
     EventManager eventManager;
 
     @Inject
-    TwitchHelixAPI twitchHelixAPI;
-
-    @Inject
-    TwitchKrakenAPI twitchKrakenAPI;
+    TwitchAPI twitchAPI;
 
     @Inject
     StreamlabsAPI streamlabsAPI;
@@ -170,12 +165,8 @@ public class FlewpBot {
         }
     }
 
-    public TwitchHelixAPI getTwitchHelixAPI() {
-        return twitchHelixAPI;
-    }
-
-    public TwitchKrakenAPI getTwitchKrakenAPI() {
-        return twitchKrakenAPI;
+    public TwitchAPI getTwitchAPI() {
+        return twitchAPI;
     }
 
     public StreamlabsAPI getStreamlabsAPI() {
@@ -188,14 +179,6 @@ public class FlewpBot {
 
     public Configuration getConfiguration() {
         return configuration;
-    }
-
-    public List<KrakenChatRoom> getConnectedChatRooms() {
-        if (twitchAPIController != null) {
-            return twitchAPIController.getChatRoomList();
-        } else {
-            throw new IllegalStateException("You must set enableIrc to true in order to use this function");
-        }
     }
 
     public String getStreamerUserId() {

@@ -9,10 +9,10 @@ import okhttp3.Route;
 
 import javax.annotation.Nullable;
 
-public class TwitchHelixAuthenticator implements Authenticator {
+public class TwitchAuthenticator implements Authenticator {
     private Configuration configuration;
 
-    public TwitchHelixAuthenticator(Configuration configuration) {
+    public TwitchAuthenticator(Configuration configuration) {
         this.configuration = configuration;
     }
 

@@ -1,6 +1,6 @@
-package com.flewp.flewpbot.model.helix;
+package com.flewp.flewpbot.model.twitch;
 
-public class HelixFollow {
+public class TwitchFollow {
     public String from_id;
     public String from_name;
     public String to_id;

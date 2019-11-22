@@ -1,14 +1,11 @@
 package com.flewp.flewpbot.api.controller;
 
 import com.flewp.flewpbot.Configuration;
-import com.flewp.flewpbot.api.TwitchHelixAPI;
-import com.flewp.flewpbot.api.TwitchKrakenAPI;
+import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.TwitchTokenGeneratorAPI;
-import com.flewp.flewpbot.model.api.ChatRoomsResponse;
 import com.flewp.flewpbot.model.api.GetUsersResponse;
 import com.flewp.flewpbot.model.api.RefreshTokenResponse;
 import com.flewp.flewpbot.model.events.twitch.*;
-import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
 import com.github.philippheuer.events4j.EventManager;
 import net.engio.mbassy.listener.Handler;
 import okhttp3.OkHttpClient;
@@ -24,7 +21,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -32,11 +32,8 @@ import java.util.stream.Collectors;
 public class TwitchAPIController {
     private Configuration configuration;
     private EventManager eventManager;
-    private TwitchKrakenAPI twitchKrakenAPI;
-    private TwitchHelixAPI twitchHelixAPI;
+    private TwitchAPI twitchAPI;
 
-    private boolean joinedChatRooms;
-    private List<KrakenChatRoom> chatRoomList = new ArrayList<>();
     private String channelId;
     private String streamerUserId;
 
@@ -68,11 +65,10 @@ public class TwitchAPIController {
         }
     }
 
-    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchKrakenAPI twitchKrakenAPI, TwitchHelixAPI twitchHelixAPI) {
+    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI) {
         this.configuration = configuration;
         this.eventManager = eventManager;
-        this.twitchKrakenAPI = twitchKrakenAPI;
-        this.twitchHelixAPI = twitchHelixAPI;
+        this.twitchAPI = twitchAPI;
 
         botExecutorService = Executors.newSingleThreadExecutor();
 
@@ -83,19 +79,27 @@ public class TwitchAPIController {
                 .build();
 
         TwitchSupport.addSupport(ircClient);
-
-        joinedChatRooms = false;
     }
 
     public synchronized void startChatBot() {
         try {
-            determineChatRoomList();
+            // Get user ID from given streamer name
+            Response<GetUsersResponse> getUsersResponse = twitchAPI.getUsers(null,
+                    Collections.singletonList(configuration.twitchStreamerName)).execute();
+
+            if (!getUsersResponse.isSuccessful() || getUsersResponse.body() == null ||
+                    getUsersResponse.body().data == null || getUsersResponse.body().data.isEmpty()) {
+                LoggerFactory.getLogger(TwitchAPIController.class).error("Can't get streamer ID to query chat rooms");
+                return;
+            }
+
+            streamerUserId = getUsersResponse.body().data.get(0).id;
+
+            // This may change down the road, but as far as Twitch is concerned, these are the same.
+            channelId = streamerUserId;
 
             ircClient.getEventManager().registerEventListener(this);
             ircClient.addChannel("#" + configuration.twitchStreamerName);
-            for (KrakenChatRoom chatRoom : chatRoomList) {
-                ircClient.addChannel("#chatrooms:" + channelId + ":" + chatRoom._id);
-            }
 
             botExecutorService.submit(() -> {
                 try {
@@ -107,31 +111,6 @@ public class TwitchAPIController {
 
         } catch (Exception e) {
             LoggerFactory.getLogger(TwitchAPIController.class).error("Error in connecting PircBot", e);
-        }
-    }
-
-    private void determineChatRoomList() throws Exception {
-        // Get user ID from given streamer name
-        Response<GetUsersResponse> getUsersResponse = twitchHelixAPI.getUsers(null,
-                Collections.singletonList(configuration.twitchStreamerName)).execute();
-
-        if (!getUsersResponse.isSuccessful() || getUsersResponse.body() == null ||
-                getUsersResponse.body().data == null || getUsersResponse.body().data.isEmpty()) {
-            LoggerFactory.getLogger(TwitchAPIController.class).error("Can't get streamer ID to query chat rooms");
-            return;
-        }
-
-        streamerUserId = getUsersResponse.body().data.get(0).id;
-
-        // This may change down the road, but as far as Kraken is concerned, these are the same.
-        channelId = streamerUserId;
-
-        // Get chat rooms for streamer
-        Response<ChatRoomsResponse> chatRoomsResponse = twitchKrakenAPI.chatRooms(streamerUserId).execute();
-
-        if (chatRoomsResponse.isSuccessful() && chatRoomsResponse.body() != null
-                && chatRoomsResponse.body().getRooms() != null) {
-            chatRoomList = chatRoomsResponse.body().getRooms();
         }
     }
 
@@ -158,11 +137,9 @@ public class TwitchAPIController {
                     ((DefaultUser) event.getActor()).getNick()), event.getParameters().get(1), bitsInt));
         } else {
             String chatRoomId = event.getParameters().get(0).substring(event.getParameters().get(0).indexOf(":") + 1);
-            KrakenChatRoom chatRoom = chatRoomList.stream().filter(room ->
-                    room._id.equals(chatRoomId)).findFirst().orElse(null);
             eventManager.dispatchEvent(new ChatEvent(new EventUser(messageTagsToMap(event.getTags()),
-                    ((DefaultUser) event.getActor()).getNick()), chatRoom,
-                    chatRoomId, event.getParameters().get(0), event.getParameters().get(1)));
+                    ((DefaultUser) event.getActor()).getNick()), chatRoomId,
+                    event.getParameters().get(0), event.getParameters().get(1)));
         }
     }
 
@@ -187,10 +164,6 @@ public class TwitchAPIController {
         if (subscribeEvent != null) {
             eventManager.dispatchEvent(subscribeEvent);
         }
-    }
-
-    public List<KrakenChatRoom> getChatRoomList() {
-        return chatRoomList;
     }
 
     public String getStreamerUserId() {
