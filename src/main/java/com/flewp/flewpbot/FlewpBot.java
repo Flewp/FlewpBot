@@ -5,11 +5,13 @@ import com.flewp.flewpbot.api.StreamlabsAPI;
 import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
+import com.flewp.flewpbot.model.api.GetFollowsResponse;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import org.slf4j.LoggerFactory;
+import retrofit2.Response;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -165,6 +167,14 @@ public class FlewpBot {
         }
     }
 
+    synchronized public void sendTwitchChatMessage(String message) {
+        if (twitchAPIController != null) {
+            twitchAPIController.getIrcClient().sendMessage("#" + configuration.twitchStreamerName, message);
+        } else {
+            throw new IllegalStateException("You must set enableIrc to true in order to use this function");
+        }
+    }
+
     public TwitchAPI getTwitchAPI() {
         return twitchAPI;
     }
@@ -195,5 +205,39 @@ public class FlewpBot {
         } else {
             throw new IllegalStateException("You must set enableIrc to true in order to use this function");
         }
+    }
+
+    public String getTwitchUserPermission(EventUser user) {
+        if (user == null) {
+            return "unknown";
+        }
+
+        if (user.getPermissions() != null) {
+            if (user.getPermissions().contains(EventUser.Permission.Broadcaster)) {
+                return "streamer";
+            } else if (user.getPermissions().contains(EventUser.Permission.Moderator)) {
+                return "moderator";
+            } else if (user.getPermissions().contains(EventUser.Permission.Subscriber)) {
+                return "subscriber";
+            }
+        }
+
+        if (user.getId() != null && twitchAPIController != null) {
+            try {
+                Response<GetFollowsResponse> response = twitchAPI.getFollows(user.getId(),
+                        twitchAPIController.getStreamerUserId()).execute();
+
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().data != null && !response.body().data.isEmpty()) {
+                    return "follower";
+                } else {
+                    return "regular";
+                }
+            } catch (Exception e) {
+                // Fail silently
+            }
+        }
+
+        return "unknown";
     }
 }
