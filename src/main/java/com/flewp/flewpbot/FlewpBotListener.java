@@ -31,4 +31,10 @@ public interface FlewpBotListener {
     void onRequestUnliked(RequestUnlikedEvent requestUnlikedEvent);
 
     void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent);
+
+    void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent);
+
+    void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent);
+
+    void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent);
 }

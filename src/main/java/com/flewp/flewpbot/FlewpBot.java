@@ -63,6 +63,9 @@ public class FlewpBot {
         eventManager.onEvent(RequestRemovedEvent.class).subscribe(this::onRequestRemoved);
         eventManager.onEvent(RequestUnlikedEvent.class).subscribe(this::onRequestUnliked);
         eventManager.onEvent(RequestUpgradedEvent.class).subscribe(this::onRequestUpgraded);
+        eventManager.onEvent(ChoiceGameStartedEvent.class).subscribe(this::onChoiceGameStarted);
+        eventManager.onEvent(ChoiceGameChoiceEnteredEvent.class).subscribe(this::onChoiceGameChoiceEntered);
+        eventManager.onEvent(ChoiceGameAnsweredEvent.class).subscribe(this::onChoiceGameAnswered);
     }
 
     synchronized public void start() {
@@ -151,6 +154,21 @@ public class FlewpBot {
     synchronized private void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(requestUpgradedEvent.toString());
         listenerList.forEach(listener -> listener.onRequestUpgraded(requestUpgradedEvent));
+    }
+
+    synchronized private void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(choiceGameStartedEvent.toString());
+        listenerList.forEach(listener -> listener.onChoiceGameStarted(choiceGameStartedEvent));
+    }
+
+    synchronized private void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(choiceGameChoiceEnteredEvent.toString());
+        listenerList.forEach(listener -> listener.onChoiceGameChoiceEntered(choiceGameChoiceEnteredEvent));
+    }
+
+    synchronized private void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(choiceGameAnsweredEvent.toString());
+        listenerList.forEach(listener -> listener.onChoiceGameAnswered(choiceGameAnsweredEvent));
     }
 
     synchronized public void sendMessage(String channel, String message) {

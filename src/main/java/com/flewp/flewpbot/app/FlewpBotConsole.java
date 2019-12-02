@@ -8,6 +8,7 @@ import com.flewp.flewpbot.model.events.twitch.*;
 
 class FlewpBotConsole extends FlewpBotListenerAdapter {
     static FlewpBot flewpBot;
+
     public static void main(String[] args) {
         flewpBot = new FlewpBot();
         flewpBot.addListener(new ConsoleListener());
@@ -23,6 +24,7 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
 
         @Override
         public void onChatMessage(ChatEvent chatEvent) {
+            flewpBot.sendTwitchChatMessage(flewpBot.getTwitchUserPermission(chatEvent.getEventUser()));
             int i = 0;
         }
 
@@ -83,6 +85,21 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
 
         @Override
         public void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent) {
+            int i = 0;
+        }
+
+        @Override
+        public void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {
+            int i = 0;
+        }
+
+        @Override
+        public void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent) {
+            int i = 0;
+        }
+
+        @Override
+        public void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent) {
             int i = 0;
         }
     }

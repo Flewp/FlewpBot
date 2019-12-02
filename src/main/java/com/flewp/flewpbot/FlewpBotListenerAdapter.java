@@ -74,4 +74,19 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
     public void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent) {
 
     }
+
+    @Override
+    public void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {
+
+    }
+
+    @Override
+    public void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent) {
+
+    }
+
+    @Override
+    public void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent) {
+
+    }
 }
