@@ -102,5 +102,10 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         public void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent) {
             int i = 0;
         }
+
+        @Override
+        public void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
+            int i = 0;
+        }
     }
 }

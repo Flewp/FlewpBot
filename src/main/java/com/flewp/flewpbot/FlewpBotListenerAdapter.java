@@ -89,4 +89,9 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
     public void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent) {
 
     }
+
+    @Override
+    public void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
+
+    }
 }

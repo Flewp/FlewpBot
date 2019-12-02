@@ -12,6 +12,7 @@ import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;
+import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -66,6 +67,7 @@ public class FlewpBot {
         eventManager.onEvent(ChoiceGameStartedEvent.class).subscribe(this::onChoiceGameStarted);
         eventManager.onEvent(ChoiceGameChoiceEnteredEvent.class).subscribe(this::onChoiceGameChoiceEntered);
         eventManager.onEvent(ChoiceGameAnsweredEvent.class).subscribe(this::onChoiceGameAnswered);
+        eventManager.onEvent(CommandsUpdatedEvent.class).subscribe(this::onCommandsUpdated);
     }
 
     synchronized public void start() {
@@ -169,6 +171,11 @@ public class FlewpBot {
     synchronized private void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(choiceGameAnsweredEvent.toString());
         listenerList.forEach(listener -> listener.onChoiceGameAnswered(choiceGameAnsweredEvent));
+    }
+
+    synchronized private void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(commandsUpdatedEvent.toString());
+        listenerList.forEach(listener -> listener.onCommandsUpdated(commandsUpdatedEvent));
     }
 
     synchronized public void sendMessage(String channel, String message) {

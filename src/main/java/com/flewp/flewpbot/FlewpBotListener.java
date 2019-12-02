@@ -37,4 +37,6 @@ public interface FlewpBotListener {
     void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent);
 
     void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent);
+
+    void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent);
 }

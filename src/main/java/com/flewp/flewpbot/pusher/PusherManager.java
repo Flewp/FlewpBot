@@ -68,6 +68,9 @@ public class PusherManager {
         channel.bind("choiceGameAnswered", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), ChoiceGameAnsweredEvent.class));
         });
+        channel.bind("commandsUpdated", pusherEvent -> {
+            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), CommandsUpdatedEvent.class));
+        });
 
         pusher.connect();
     }
