@@ -1,6 +1,7 @@
 package com.flewp.flewpbot.api;
 
 import com.flewp.flewpbot.model.api.GetFollowsResponse;
+import com.flewp.flewpbot.model.api.GetStreamsResponse;
 import com.flewp.flewpbot.model.api.GetSubscriptionsResponse;
 import com.flewp.flewpbot.model.api.GetUsersResponse;
 import retrofit2.Call;
@@ -18,4 +19,7 @@ public interface TwitchAPI {
 
     @GET("subscriptions")
     Call<GetSubscriptionsResponse> getSubscriptions(@Query("broadcaster_id") String broadcaster_id, @Query("after") String cursor);
+
+    @GET("streams")
+    Call<GetStreamsResponse> getStreams(@Query("user_login") String user_login);
 }
