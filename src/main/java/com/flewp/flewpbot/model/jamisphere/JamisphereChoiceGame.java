@@ -8,6 +8,7 @@ public class JamisphereChoiceGame {
     public String choiceType; // "request, song, none"
     public String description;
     public List<String> choices;
+    public List<String> resolvedChoices;
     public Long startsAt;
     public Long expiresAt;
     public String answer;
