@@ -5,8 +5,12 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface JamisphereAPI {
+    @GET("request")
+    Call<JamisphereRequestResponse> request(@Query("userName") String userName);
+
     @POST("request/behalf")
     Call<JamisphereRequestResponse> requestBehalf(@Body JamisphereRequestBehalfBody body);
 
