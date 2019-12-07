@@ -89,6 +89,11 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         }
 
         @Override
+        public void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent) {
+            int i = 0;
+        }
+
+        @Override
         public void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {
             int i = 0;
         }

@@ -76,6 +76,11 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
     }
 
     @Override
+    public void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent) {
+
+    }
+
+    @Override
     public void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {
 
     }

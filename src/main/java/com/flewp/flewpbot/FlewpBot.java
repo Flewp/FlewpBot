@@ -12,7 +12,6 @@ import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;
-import sun.rmi.runtime.Log;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -64,6 +63,7 @@ public class FlewpBot {
         eventManager.onEvent(RequestRemovedEvent.class).subscribe(this::onRequestRemoved);
         eventManager.onEvent(RequestUnlikedEvent.class).subscribe(this::onRequestUnliked);
         eventManager.onEvent(RequestUpgradedEvent.class).subscribe(this::onRequestUpgraded);
+        eventManager.onEvent(RequestDowngradedEvent.class).subscribe(this::onRequestDowngraded);
         eventManager.onEvent(ChoiceGameStartedEvent.class).subscribe(this::onChoiceGameStarted);
         eventManager.onEvent(ChoiceGameChoiceEnteredEvent.class).subscribe(this::onChoiceGameChoiceEntered);
         eventManager.onEvent(ChoiceGameAnsweredEvent.class).subscribe(this::onChoiceGameAnswered);
@@ -156,6 +156,11 @@ public class FlewpBot {
     synchronized private void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(requestUpgradedEvent.toString());
         listenerList.forEach(listener -> listener.onRequestUpgraded(requestUpgradedEvent));
+    }
+
+    synchronized private void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestDowngradedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestDowngraded(requestDowngradedEvent));
     }
 
     synchronized private void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {

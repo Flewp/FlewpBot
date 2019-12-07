@@ -59,6 +59,9 @@ public class PusherManager {
         channel.bind("requestUpgraded", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestUpgradedEvent.class));
         });
+        channel.bind("requestDowngraded", pusherEvent -> {
+            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestDowngradedEvent.class));
+        });
         channel.bind("choiceGameStarted", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), ChoiceGameStartedEvent.class));
         });

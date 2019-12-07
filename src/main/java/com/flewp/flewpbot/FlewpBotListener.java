@@ -32,6 +32,8 @@ public interface FlewpBotListener {
 
     void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent);
 
+    void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent);
+
     void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent);
 
     void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent);

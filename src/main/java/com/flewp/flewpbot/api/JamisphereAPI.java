@@ -13,6 +13,9 @@ public interface JamisphereAPI {
     @POST("request/upgrade/behalf")
     Call<JamisphereRequestResponse> requestUpgradeBehalf(@Body JamisphereRequestUpgradeBehalfBody body);
 
+    @POST("request/downgrade/behalf")
+    Call<JamisphereRequestResponse> requestDowngradeBehalf(@Body JamisphereRequestUpgradeBehalfBody body);
+
     @POST("request/remove/behalf")
     Call<JamisphereBaseResponse> requestRemoveBehalf(@Body JamisphereRequestRemoveBehalfBody body);
 
