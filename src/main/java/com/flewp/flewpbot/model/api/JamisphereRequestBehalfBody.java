@@ -4,12 +4,12 @@ public class JamisphereRequestBehalfBody {
     public String request;
     public String behalfOfUserName;
     public Boolean vip;
-    public Boolean playInstantly;
+    public Boolean playImmediately;
 
-    public JamisphereRequestBehalfBody(String request, String behalfOfUserName, Boolean vip, Boolean playInstantly) {
+    public JamisphereRequestBehalfBody(String request, String behalfOfUserName, Boolean vip, Boolean playImmediately) {
         this.request = request;
         this.behalfOfUserName = behalfOfUserName;
         this.vip = vip;
-        this.playInstantly = playInstantly;
+        this.playImmediately = playImmediately;
     }
 }
