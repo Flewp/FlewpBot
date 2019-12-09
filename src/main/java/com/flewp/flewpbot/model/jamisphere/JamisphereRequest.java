@@ -23,7 +23,7 @@ public class JamisphereRequest implements Comparable<JamisphereRequest> {
     @Override
     public int compareTo(JamisphereRequest o) {
         if (status != null && o.status != null && !status.equals(o.status)) {
-            return status.compareTo(o.status);
+            return o.status.compareTo(status);
         }
 
         return requestId.compareTo(o.requestId);
