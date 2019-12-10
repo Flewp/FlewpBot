@@ -124,8 +124,8 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI) {
-        return new TwitchAPIController(configuration, eventManager, twitchAPI);
+    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI) {
+        return new TwitchAPIController(configuration, eventManager, twitchAPI, jamisphereAPI);
     }
 
     @Provides

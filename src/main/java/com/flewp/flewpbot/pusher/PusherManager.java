@@ -2,6 +2,8 @@ package com.flewp.flewpbot.pusher;
 
 import com.flewp.flewpbot.Configuration;
 import com.flewp.flewpbot.model.events.jamisphere.*;
+import com.flewp.flewpbot.model.events.twitch.BitEvent;
+import com.flewp.flewpbot.model.events.twitch.SubscribeEvent;
 import com.github.philippheuer.events4j.EventManager;
 import com.google.gson.Gson;
 import com.pusher.client.Pusher;
@@ -14,12 +16,15 @@ public class PusherManager {
     private static final String JAMISPHERE_EVENT = "jamisphere";
     private Gson gson = new Gson();
     private Pusher pusher;
+
+    private Configuration configuration;
     private EventManager eventManager;
 
     private Channel channel;
 
     @Inject
     public PusherManager(Configuration configuration, EventManager eventManager) {
+        this.configuration = configuration;
         this.eventManager = eventManager;
 
         PusherOptions options = new PusherOptions().setCluster(configuration.pusherCluster);
@@ -74,6 +79,15 @@ public class PusherManager {
         channel.bind("commandsUpdated", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), CommandsUpdatedEvent.class));
         });
+
+        if (!configuration.enableIrc) {
+            channel.bind("twitchCheer", pusherEvent -> {
+                eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), BitEvent.class));
+            });
+            channel.bind("twitchSubscribe", pusherEvent -> {
+                eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), SubscribeEvent.class));
+            });
+        }
 
         pusher.connect();
     }

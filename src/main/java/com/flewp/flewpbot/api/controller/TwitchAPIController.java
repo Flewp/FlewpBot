@@ -1,12 +1,16 @@
 package com.flewp.flewpbot.api.controller;
 
 import com.flewp.flewpbot.Configuration;
+import com.flewp.flewpbot.api.JamisphereAPI;
+import com.flewp.flewpbot.api.RetrofitEmptyCallback;
 import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.TwitchTokenGeneratorAPI;
 import com.flewp.flewpbot.model.api.GetUsersResponse;
+import com.flewp.flewpbot.model.api.JamispherePusherBody;
 import com.flewp.flewpbot.model.api.RefreshTokenResponse;
 import com.flewp.flewpbot.model.events.twitch.*;
 import com.github.philippheuer.events4j.EventManager;
+import com.google.gson.Gson;
 import net.engio.mbassy.listener.Handler;
 import okhttp3.OkHttpClient;
 import org.kitteh.irc.client.library.Client;
@@ -30,9 +34,12 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class TwitchAPIController {
+    private Gson gson = new Gson();
+
     private Configuration configuration;
     private EventManager eventManager;
     private TwitchAPI twitchAPI;
+    private JamisphereAPI jamisphereAPI;
 
     private String channelId;
     private String streamerUserId;
@@ -65,10 +72,11 @@ public class TwitchAPIController {
         }
     }
 
-    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI) {
+    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI) {
         this.configuration = configuration;
         this.eventManager = eventManager;
         this.twitchAPI = twitchAPI;
+        this.jamisphereAPI = jamisphereAPI;
 
         botExecutorService = Executors.newSingleThreadExecutor();
 
@@ -133,8 +141,10 @@ public class TwitchAPIController {
         }
 
         if (bitsInt > 0) {
-            eventManager.dispatchEvent(new BitEvent(new EventUser(messageTagsToMap(event.getTags()),
-                    ((DefaultUser) event.getActor()).getNick()), event.getParameters().get(1), bitsInt));
+            BitEvent bitEvent = new BitEvent(new EventUser(messageTagsToMap(event.getTags()),
+                    ((DefaultUser) event.getActor()).getNick()), event.getParameters().get(1), bitsInt);
+            jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(bitEvent).getAsJsonObject(), "twitchCheer")).enqueue(new RetrofitEmptyCallback<>());
+            eventManager.dispatchEvent(bitEvent);
         } else {
             String chatRoomId = event.getParameters().get(0).substring(event.getParameters().get(0).indexOf(":") + 1);
             eventManager.dispatchEvent(new ChatEvent(new EventUser(messageTagsToMap(event.getTags()),
@@ -161,6 +171,7 @@ public class TwitchAPIController {
                 event.getMessage().orElse(""), login);
 
         if (subscribeEvent != null) {
+            jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(subscribeEvent).getAsJsonObject(), "twitchSubscribe")).enqueue(new RetrofitEmptyCallback<>());
             eventManager.dispatchEvent(subscribeEvent);
         }
     }
