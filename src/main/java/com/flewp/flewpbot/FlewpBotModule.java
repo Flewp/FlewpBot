@@ -80,8 +80,8 @@ class FlewpBotModule {
     @Provides
     @Singleton
     public TwitchAPI provideTwitchAPI(OkHttpClient okHttpClient,
-                                           TwitchRequestInterceptor requestInterceptor,
-                                           TwitchAuthenticator authenticator) {
+                                      TwitchRequestInterceptor requestInterceptor,
+                                      TwitchAuthenticator authenticator) {
         return new Retrofit.Builder()
                 .baseUrl("https://api.twitch.tv/helix/")
                 .client(okHttpClient.newBuilder()
@@ -131,8 +131,8 @@ class FlewpBotModule {
     @Provides
     @Singleton
     public StreamlabsAPIController provideStreamlabsAPIController(Configuration configuration, EventManager eventManager,
-                                                                  StreamlabsAPI streamlabsAPI) {
-        return new StreamlabsAPIController(configuration, eventManager, streamlabsAPI);
+                                                                  StreamlabsAPI streamlabsAPI, JamisphereAPI jamisphereAPI) {
+        return new StreamlabsAPIController(configuration, eventManager, streamlabsAPI, jamisphereAPI);
     }
 
     @Provides

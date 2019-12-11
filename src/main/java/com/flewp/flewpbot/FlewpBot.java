@@ -74,7 +74,11 @@ public class FlewpBot {
         if (configuration.enableIrc) {
             twitchAPIController.startChatBot();
         }
-        streamlabsAPIController.startQueryingDonations();
+
+        if (configuration.isStreamlabsConnectable()) {
+            streamlabsAPIController.startQueryingDonations();
+        }
+
         pusherManager.connect();
     }
 

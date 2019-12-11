@@ -3,12 +3,14 @@ package com.flewp.flewpbot.pusher;
 import com.flewp.flewpbot.Configuration;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.BitEvent;
+import com.flewp.flewpbot.model.events.twitch.NewDonationEvent;
 import com.flewp.flewpbot.model.events.twitch.SubscribeEvent;
 import com.github.philippheuer.events4j.EventManager;
 import com.google.gson.Gson;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 
@@ -27,12 +29,17 @@ public class PusherManager {
         this.configuration = configuration;
         this.eventManager = eventManager;
 
+        if (configuration.pusherCluster == null || configuration.pusherKey == null) {
+            LoggerFactory.getLogger(PusherManager.class).info("Pusher credentials not provided, Pusher will not be connected.");
+            return;
+        }
+
         PusherOptions options = new PusherOptions().setCluster(configuration.pusherCluster);
         pusher = new Pusher(configuration.pusherKey, options);
     }
 
     public void connect() {
-        if (channel != null) {
+        if (pusher == null || channel != null) {
             return;
         }
 
@@ -86,6 +93,12 @@ public class PusherManager {
             });
             channel.bind("twitchSubscribe", pusherEvent -> {
                 eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), SubscribeEvent.class));
+            });
+        }
+
+        if (!configuration.isStreamlabsConnectable()) {
+            channel.bind("streamlabsDonation", pusherEvent -> {
+                eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), NewDonationEvent.class));
             });
         }
 

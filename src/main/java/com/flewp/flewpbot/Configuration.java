@@ -55,6 +55,10 @@ public class Configuration {
                 !streamLabsRefreshToken.isEmpty() && !streamLabsRefreshToken.equalsIgnoreCase("empty");
     }
 
+    public boolean isStreamlabsConnectable() {
+        return hasStreamlabsCredentials() || webBrowserAvailable;
+    }
+
     public void dumpFile() {
         try {
             new Yaml().dump(this, new FileWriter("config.yaml"));
