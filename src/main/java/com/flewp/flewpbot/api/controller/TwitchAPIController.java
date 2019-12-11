@@ -143,7 +143,7 @@ public class TwitchAPIController {
         if (bitsInt > 0) {
             BitEvent bitEvent = new BitEvent(new EventUser(messageTagsToMap(event.getTags()),
                     ((DefaultUser) event.getActor()).getNick()), event.getParameters().get(1), bitsInt);
-            jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(bitEvent).getAsJsonObject(), "jamipshere", "twitchCheer")).enqueue(new RetrofitEmptyCallback<>());
+            jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(bitEvent).getAsJsonObject(), "jamisphere", "twitchCheer")).enqueue(new RetrofitEmptyCallback<>());
             eventManager.dispatchEvent(bitEvent);
         } else {
             String chatRoomId = event.getParameters().get(0).substring(event.getParameters().get(0).indexOf(":") + 1);
