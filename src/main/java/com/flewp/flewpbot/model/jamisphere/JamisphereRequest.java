@@ -13,9 +13,11 @@ public class JamisphereRequest implements Comparable<JamisphereRequest> {
     public Long youtubeSongLikes;
     public Long youtubeSongDislikes;
     public Long youtubeSongViews;
+    public String youtubeThumbnail;
 
     public String twitchUserName;
     public String twitchUserId;
+    public String twitchProfilePicture;
 
     public String timePlayed; // ISO String of time played
     public Long streamUptimePlayed; // Time in milliseconds that the stream has been live when played
