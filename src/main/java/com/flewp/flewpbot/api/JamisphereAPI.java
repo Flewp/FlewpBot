@@ -47,6 +47,9 @@ public interface JamisphereAPI {
     @POST("drums")
     Call<JamisphereBaseResponse> drums(@Body JamisphereDrumsBody body);
 
+    @GET("games")
+    Call<JamisphereGamesResponse> games();
+
     @POST("choicegame/start")
     Call<JamisphereChoiceGameResponse> choiceGameStart(@Body JamisphereChoiceGameStartBody body);
 
