@@ -113,12 +113,12 @@ public class TwitchAPIController {
                 try {
                     ircClient.connect();
                 } catch (Exception e) {
-                    LoggerFactory.getLogger(TwitchAPIController.class).error("Error in PircBot", e);
+                    LoggerFactory.getLogger(TwitchAPIController.class).error("Error in Kitteh", e);
                 }
             });
 
         } catch (Exception e) {
-            LoggerFactory.getLogger(TwitchAPIController.class).error("Error in connecting PircBot", e);
+            LoggerFactory.getLogger(TwitchAPIController.class).error("Error in connecting Kitteh", e);
         }
     }
 
