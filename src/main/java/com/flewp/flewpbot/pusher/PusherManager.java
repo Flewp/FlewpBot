@@ -10,6 +10,9 @@ import com.google.gson.Gson;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
+import com.pusher.client.connection.ConnectionEventListener;
+import com.pusher.client.connection.ConnectionState;
+import com.pusher.client.connection.ConnectionStateChange;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
@@ -44,6 +47,19 @@ public class PusherManager {
         }
 
         channel = pusher.subscribe(JAMISPHERE_EVENT);
+        pusher.getConnection().bind(ConnectionState.ALL, new ConnectionEventListener() {
+            @Override
+            public void onConnectionStateChange(ConnectionStateChange change) {
+                LoggerFactory.getLogger(PusherManager.class).info("Pusher connection changed from \""
+                        + change.getPreviousState().name() + "\" to \"" + change.getCurrentState().name() + "\"");
+            }
+
+            @Override
+            public void onError(String message, String code, Exception e) {
+                LoggerFactory.getLogger(PusherManager.class).error("Pusher connection error: \"" + message + "\"");
+            }
+        });
+
         channel.bind("guessingGameAnswered", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), GuessingGameAnsweredEvent.class));
         });
