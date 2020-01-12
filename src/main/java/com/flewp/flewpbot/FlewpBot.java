@@ -10,6 +10,7 @@ import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
+import com.pusher.client.Pusher;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;
 
@@ -223,6 +224,10 @@ public class FlewpBot {
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    public Pusher getPusher() {
+        return pusherManager.getPusher();
     }
 
     public String getStreamerUserId() {

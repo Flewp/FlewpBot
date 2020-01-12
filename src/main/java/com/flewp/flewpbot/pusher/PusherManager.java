@@ -120,4 +120,8 @@ public class PusherManager {
 
         pusher.connect();
     }
+
+    public Pusher getPusher() {
+        return pusher;
+    }
 }
