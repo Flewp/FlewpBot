@@ -3,6 +3,7 @@ package com.flewp.flewpbot;
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.StreamlabsAPI;
 import com.flewp.flewpbot.api.TwitchAPI;
+import com.flewp.flewpbot.api.authenticator.JamisphereAuthenticator;
 import com.flewp.flewpbot.api.authenticator.StreamlabsAuthenticator;
 import com.flewp.flewpbot.api.authenticator.TwitchAuthenticator;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
@@ -79,6 +80,12 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
+    public JamisphereAuthenticator provideJamisphereAuthenticator(Configuration configuration) {
+        return new JamisphereAuthenticator(configuration);
+    }
+
+    @Provides
+    @Singleton
     public TwitchAPI provideTwitchAPI(OkHttpClient okHttpClient,
                                       TwitchRequestInterceptor requestInterceptor,
                                       TwitchAuthenticator authenticator) {
@@ -111,11 +118,13 @@ class FlewpBotModule {
     @Provides
     @Singleton
     public JamisphereAPI provideJamisphereAPI(OkHttpClient okHttpClient,
-                                              JamisphereRequestInterceptor requestInterceptor) {
+                                              JamisphereRequestInterceptor requestInterceptor,
+                                              JamisphereAuthenticator authenticator) {
         return new Retrofit.Builder()
                 .baseUrl("https://hqc73tr82k.execute-api.us-west-2.amazonaws.com/Alpha/")
                 .client(okHttpClient.newBuilder()
                         .addInterceptor(requestInterceptor)
+                        .authenticator(authenticator)
                         .build())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
