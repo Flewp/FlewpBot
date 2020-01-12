@@ -77,20 +77,20 @@ public class TwitchAPIController {
         this.eventManager = eventManager;
         this.twitchAPI = twitchAPI;
         this.jamisphereAPI = jamisphereAPI;
-
-        botExecutorService = Executors.newSingleThreadExecutor();
-
-        ircClient = Client.builder()
-                .server().host("irc.chat.twitch.tv").port(443)
-                .password(configuration.twitchChatBotAccessToken).then()
-                .nick(configuration.twitchChatBotName)
-                .build();
-
-        TwitchSupport.addSupport(ircClient);
     }
 
     public synchronized void startChatBot() {
         try {
+            botExecutorService = Executors.newSingleThreadExecutor();
+
+            ircClient = Client.builder()
+                    .server().host("irc.chat.twitch.tv").port(443)
+                    .password(configuration.twitchChatBotAccessToken).then()
+                    .nick(configuration.twitchChatBotName)
+                    .build();
+
+            TwitchSupport.addSupport(ircClient);
+
             // Get user ID from given streamer name
             Response<GetUsersResponse> getUsersResponse = twitchAPI.getUsers(null,
                     Collections.singletonList(configuration.twitchStreamerName)).execute();
