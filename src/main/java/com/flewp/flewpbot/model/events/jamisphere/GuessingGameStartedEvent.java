@@ -5,4 +5,11 @@ import com.github.philippheuer.events4j.domain.Event;
 
 public class GuessingGameStartedEvent extends Event {
     public JamisphereGuessingGame guessingGame;
+
+    @Override
+    public String toString() {
+        return "GuessingGameStartedEvent{" +
+                "guessingGame=" + guessingGame +
+                '}';
+    }
 }

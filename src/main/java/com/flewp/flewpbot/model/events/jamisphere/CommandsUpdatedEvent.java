@@ -8,4 +8,9 @@ import java.util.List;
 public class CommandsUpdatedEvent extends Event {
     public List<JamisphereCommand> commands;
     public String operation;
+
+    @Override
+    public String toString() {
+        return "CommandsUpdatedEvent{}";
+    }
 }

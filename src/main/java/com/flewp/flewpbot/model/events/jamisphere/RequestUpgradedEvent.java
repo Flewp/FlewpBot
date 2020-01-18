@@ -5,4 +5,11 @@ import com.github.philippheuer.events4j.domain.Event;
 
 public class RequestUpgradedEvent extends Event {
     public JamisphereRequest request;
+
+    @Override
+    public String toString() {
+        return "RequestUpgradedEvent{" +
+                "request=" + request +
+                '}';
+    }
 }

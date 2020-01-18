@@ -5,4 +5,11 @@ import com.github.philippheuer.events4j.domain.Event;
 
 public class ChoiceGameAnsweredEvent extends Event {
     public JamisphereChoiceGame choiceGame;
+
+    @Override
+    public String toString() {
+        return "ChoiceGameAnsweredEvent{" +
+                "choiceGame=" + choiceGame +
+                '}';
+    }
 }

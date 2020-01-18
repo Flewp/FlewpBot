@@ -30,4 +30,26 @@ public class JamisphereRequest implements Comparable<JamisphereRequest> {
 
         return requestId.compareTo(o.requestId);
     }
+
+    @Override
+    public String toString() {
+        return "JamisphereRequest{" +
+                "requestId='" + requestId + '\'' +
+                ", inList=" + inList +
+                ", playing=" + playing +
+                ", status=" + status +
+                ", likes=" + likes +
+                ", youtubeVideoId='" + youtubeVideoId + '\'' +
+                ", youtubeSongTitle='" + youtubeSongTitle + '\'' +
+                ", youtubeSongLikes=" + youtubeSongLikes +
+                ", youtubeSongDislikes=" + youtubeSongDislikes +
+                ", youtubeSongViews=" + youtubeSongViews +
+                ", youtubeThumbnail='" + youtubeThumbnail + '\'' +
+                ", twitchUserName='" + twitchUserName + '\'' +
+                ", twitchUserId='" + twitchUserId + '\'' +
+                ", twitchProfilePicture='" + twitchProfilePicture + '\'' +
+                ", timePlayed='" + timePlayed + '\'' +
+                ", streamUptimePlayed=" + streamUptimePlayed +
+                '}';
+    }
 }

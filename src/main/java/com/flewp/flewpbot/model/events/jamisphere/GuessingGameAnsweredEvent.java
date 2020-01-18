@@ -11,4 +11,6 @@ public class GuessingGameAnsweredEvent extends Event {
     public JamisphereRequest request;
     public JamisphereGuess guess;
     public JamisphereGuessingGame guessingGame;
+
+
 }

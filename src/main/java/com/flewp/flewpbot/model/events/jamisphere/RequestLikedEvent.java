@@ -5,4 +5,12 @@ import com.github.philippheuer.events4j.domain.Event;
 public class RequestLikedEvent extends Event {
     public String requestId;
     public Integer likes;
+
+    @Override
+    public String toString() {
+        return "RequestLikedEvent{" +
+                "requestId='" + requestId + '\'' +
+                ", likes=" + likes +
+                '}';
+    }
 }

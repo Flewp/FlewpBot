@@ -6,4 +6,12 @@ import com.github.philippheuer.events4j.domain.Event;
 public class RequestAddedEvent extends Event {
     public JamisphereRequest request;
     public String removed;
+
+    @Override
+    public String toString() {
+        return "RequestAddedEvent{" +
+                "request=" + request +
+                ", removed='" + removed + '\'' +
+                '}';
+    }
 }

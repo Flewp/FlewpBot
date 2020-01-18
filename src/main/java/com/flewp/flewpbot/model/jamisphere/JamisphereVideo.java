@@ -9,7 +9,22 @@ public class JamisphereVideo {
     public ContentDetails contentDetails;
     public Statistics statistics;
 
+    @Override
+    public String toString() {
+        return "JamisphereVideo{" +
+                "snippet=" + snippet +
+                '}';
+    }
+
     public static class Snippet {
+        @Override
+        public String toString() {
+            return "Snippet{" +
+                    "title='" + title + '\'' +
+                    ", description='" + description + '\'' +
+                    '}';
+        }
+
         public String publishedAt;
         public String channelId;
         public String title;
