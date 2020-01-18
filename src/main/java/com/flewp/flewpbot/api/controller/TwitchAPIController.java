@@ -16,7 +16,12 @@ import okhttp3.OkHttpClient;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.defaults.element.DefaultUser;
 import org.kitteh.irc.client.library.element.MessageTag;
+import org.kitteh.irc.client.library.event.channel.ChannelKickEvent;
+import org.kitteh.irc.client.library.event.channel.ChannelPartEvent;
 import org.kitteh.irc.client.library.event.client.ClientReceiveCommandEvent;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionEndedEvent;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionFailedEvent;
 import org.kitteh.irc.client.library.feature.filter.CommandFilter;
 import org.kitteh.irc.client.library.feature.twitch.TwitchSupport;
 import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent;
@@ -174,6 +179,31 @@ public class TwitchAPIController {
             jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(subscribeEvent).getAsJsonObject(), "jamisphere", "twitchSubscribe")).enqueue(new RetrofitEmptyCallback<>());
             eventManager.dispatchEvent(subscribeEvent);
         }
+    }
+
+    @Handler
+    public void onDisconnect(ChannelPartEvent event) {
+        ircClient.reconnect();
+    }
+
+    @Handler
+    public void onDisconnect(ChannelKickEvent event) {
+        ircClient.reconnect();
+    }
+
+    @Handler
+    public void onDisconnect(ClientConnectionClosedEvent event) {
+        ircClient.reconnect();
+    }
+
+    @Handler
+    public void onDisconnect(ClientConnectionEndedEvent event) {
+        ircClient.reconnect();
+    }
+
+    @Handler
+    public void onDisconnect(ClientConnectionFailedEvent event) {
+        ircClient.reconnect();
     }
 
     public String getStreamerUserId() {

@@ -26,6 +26,7 @@ public class PusherManager {
     private EventManager eventManager;
 
     private Channel channel;
+    private ConnectionEventListener connectionEventListener;
 
     @Inject
     public PusherManager(Configuration configuration, EventManager eventManager) {
@@ -47,18 +48,25 @@ public class PusherManager {
         }
 
         channel = pusher.subscribe(JAMISPHERE_EVENT);
-        pusher.getConnection().bind(ConnectionState.ALL, new ConnectionEventListener() {
+        connectionEventListener = new ConnectionEventListener() {
             @Override
             public void onConnectionStateChange(ConnectionStateChange change) {
                 LoggerFactory.getLogger(PusherManager.class).info("Pusher connection changed from \""
                         + change.getPreviousState().name() + "\" to \"" + change.getCurrentState().name() + "\"");
+
+                if (change.getCurrentState() == ConnectionState.DISCONNECTED) {
+                    reconnect();
+                }
             }
 
             @Override
             public void onError(String message, String code, Exception e) {
                 LoggerFactory.getLogger(PusherManager.class).error("Pusher connection error: \"" + message + "\"");
+                reconnect();
             }
-        });
+        };
+
+        pusher.getConnection().bind(ConnectionState.ALL, connectionEventListener);
 
         channel.bind("guessingGameAnswered", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), GuessingGameAnsweredEvent.class));
@@ -119,6 +127,29 @@ public class PusherManager {
         }
 
         pusher.connect();
+    }
+
+    private void disconnect() {
+        if (pusher == null) {
+            return;
+        }
+
+        if (connectionEventListener != null) {
+            pusher.getConnection().unbind(ConnectionState.ALL, connectionEventListener);
+            connectionEventListener = null;
+        }
+
+        pusher.unsubscribe(JAMISPHERE_EVENT);
+        pusher.disconnect();
+
+        channel = null;
+    }
+
+    private void reconnect() {
+        new Thread(() -> {
+            disconnect();
+            connect();
+        }).start();
     }
 
     public Pusher getPusher() {
