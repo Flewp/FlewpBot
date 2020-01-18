@@ -226,8 +226,12 @@ public class FlewpBot {
         return configuration;
     }
 
+    public PusherManager getPusherManager() {
+        return pusherManager;
+    }
+
     public Pusher getPusher() {
-        return pusherManager.getPusher();
+        return getPusherManager().getPusher();
     }
 
     public String getStreamerUserId() {

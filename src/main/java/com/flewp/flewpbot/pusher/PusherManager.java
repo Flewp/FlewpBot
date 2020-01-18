@@ -28,24 +28,28 @@ public class PusherManager {
     private Channel channel;
     private ConnectionEventListener connectionEventListener;
 
+    private boolean reconnect = true;
+
     @Inject
     public PusherManager(Configuration configuration, EventManager eventManager) {
         this.configuration = configuration;
         this.eventManager = eventManager;
+    }
 
+    public void connect() {
         if (configuration.pusherCluster == null || configuration.pusherKey == null) {
             LoggerFactory.getLogger(PusherManager.class).info("Pusher credentials not provided, Pusher will not be connected.");
             return;
         }
 
-        PusherOptions options = new PusherOptions().setCluster(configuration.pusherCluster);
-        pusher = new Pusher(configuration.pusherKey, options);
-    }
-
-    public void connect() {
-        if (pusher == null || channel != null) {
+        if (pusher != null && (pusher.getConnection().getState() == ConnectionState.CONNECTING
+                || pusher.getConnection().getState() == ConnectionState.CONNECTED)) {
+            // Don't try to connect if we already have a connected pusher client.
             return;
         }
+
+        PusherOptions options = new PusherOptions().setCluster(configuration.pusherCluster);
+        pusher = new Pusher(configuration.pusherKey, options);
 
         channel = pusher.subscribe(JAMISPHERE_EVENT);
         connectionEventListener = new ConnectionEventListener() {
@@ -54,15 +58,40 @@ public class PusherManager {
                 LoggerFactory.getLogger(PusherManager.class).info("Pusher connection changed from \""
                         + change.getPreviousState().name() + "\" to \"" + change.getCurrentState().name() + "\"");
 
+                if (change.getCurrentState() == ConnectionState.CONNECTED) {
+                    // Default to try to reconnect once connected
+                    reconnect = true;
+                }
+
                 if (change.getCurrentState() == ConnectionState.DISCONNECTED) {
-                    reconnect();
+                    if (pusher != null) {
+                        // Clean up connection listener since we're disconnected and if we connect again we'll create
+                        // a new client.
+                        pusher.getConnection().unbind(ConnectionState.ALL, this);
+                    }
+
+                    if (reconnect) {
+                        // If reconnecting, this flag will get set to true once reconnected.
+                        reconnect = false;
+                        new Thread(() -> {
+                            // Try the reconnect on a fresh thread.
+                            LoggerFactory.getLogger(PusherManager.class).info("Attempting to reconnect Pusher.");
+                            connect();
+                        }).run();
+                    }
                 }
             }
 
             @Override
             public void onError(String message, String code, Exception e) {
                 LoggerFactory.getLogger(PusherManager.class).error("Pusher connection error: \"" + message + "\"");
-                reconnect();
+                if (reconnect) {
+                    reconnect = false;
+                    new Thread(() -> {
+                        LoggerFactory.getLogger(PusherManager.class).info("Attempting to reconnect Pusher.");
+                        connect();
+                    }).run();
+                }
             }
         };
 
@@ -129,27 +158,17 @@ public class PusherManager {
         pusher.connect();
     }
 
-    private void disconnect() {
-        if (pusher == null) {
+    public void disconnect(boolean reconnect) {
+        this.reconnect = reconnect;
+
+        if (pusher == null || pusher.getConnection().getState() == ConnectionState.DISCONNECTED) {
             return;
         }
 
-        if (connectionEventListener != null) {
-            pusher.getConnection().unbind(ConnectionState.ALL, connectionEventListener);
-            connectionEventListener = null;
-        }
-
         pusher.unsubscribe(JAMISPHERE_EVENT);
-        pusher.disconnect();
-
         channel = null;
-    }
 
-    private void reconnect() {
-        new Thread(() -> {
-            disconnect();
-            connect();
-        }).start();
+        pusher.disconnect();
     }
 
     public Pusher getPusher() {
