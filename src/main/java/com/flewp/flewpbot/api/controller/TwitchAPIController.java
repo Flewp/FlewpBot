@@ -182,27 +182,18 @@ public class TwitchAPIController {
     }
 
     @Handler
-    public void onDisconnect(ChannelPartEvent event) {
-        LoggerFactory.getLogger(TwitchAPIController.class).info("ChannelPartEvent, attempting reconnect." + event.toString());
-        ircClient.reconnect();
-    }
-
-    @Handler
     public void onDisconnect(ClientConnectionClosedEvent event) {
-        LoggerFactory.getLogger(TwitchAPIController.class).info("ClientConnectionClosedEvent, attempting reconnect." + event.toString());
-        ircClient.reconnect();
+        LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());
     }
 
     @Handler
     public void onDisconnect(ClientConnectionEndedEvent event) {
-        LoggerFactory.getLogger(TwitchAPIController.class).info("ClientConnectionEndedEvent, attempting reconnect." + event.toString());
-        ircClient.reconnect();
+        LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());
     }
 
     @Handler
     public void onDisconnect(ClientConnectionFailedEvent event) {
-        LoggerFactory.getLogger(TwitchAPIController.class).info("ClientConnectionFailedEvent, attempting reconnect." + event.toString());
-        ircClient.reconnect();
+        LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());
     }
 
     public String getStreamerUserId() {
