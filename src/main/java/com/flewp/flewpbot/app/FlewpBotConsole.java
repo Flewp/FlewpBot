@@ -115,7 +115,7 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         }
 
         @Override
-        public void onMidiMessage(String deviceName, ShortMessage message) {
+        public void onMidiMessage(String deviceName, ShortMessage message, int timestamp) {
             int i = 0;
         }
     }

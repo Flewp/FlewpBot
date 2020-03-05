@@ -206,7 +206,7 @@ public class FlewpBot {
         WebSocketClient client = new WebSocketClient(URI.create("ws://[::1]:12321/midi")) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                LoggerFactory.getLogger(FlewpBot.class).info("MIDI Websocket opened! " + handshakedata.toString());
+                LoggerFactory.getLogger(FlewpBot.class).info("MIDI Websocket opened!");
             }
 
             @Override
@@ -216,7 +216,12 @@ public class FlewpBot {
                 }
 
                 String[] split = message.split("\\$");
+                if (split.length != 3) {
+                    return;
+                }
+
                 ShortMessage midi;
+                int timestamp;
 
                 try {
                     int parse = Integer.parseInt(split[1]);
@@ -228,15 +233,12 @@ public class FlewpBot {
                     };
 
                     midi = new ShortMessage(bytes[0] & 0xF0, bytes[0] & 0x0F, bytes[1], bytes[2]);
+                    timestamp = Integer.parseInt(split[2]);
                 } catch (Exception e) {
                     return;
                 }
 
-                if (split.length != 2) {
-                    return;
-                }
-
-                listenerList.forEach(listener -> listener.onMidiMessage(split[0], midi));
+                listenerList.forEach(listener -> listener.onMidiMessage(split[0], midi, timestamp));
             }
 
             @Override

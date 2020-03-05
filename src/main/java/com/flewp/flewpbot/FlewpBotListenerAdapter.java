@@ -103,7 +103,7 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
     }
 
     @Override
-    public void onMidiMessage(String deviceName, ShortMessage message) {
+    public void onMidiMessage(String deviceName, ShortMessage message, int timestamp) {
 
     }
 }

@@ -44,5 +44,5 @@ public interface FlewpBotListener {
 
     void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent);
 
-    void onMidiMessage(String deviceName, ShortMessage message);
+    void onMidiMessage(String deviceName, ShortMessage message, int timestamp);
 }
