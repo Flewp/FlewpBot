@@ -3,6 +3,8 @@ package com.flewp.flewpbot;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 
+import javax.sound.midi.ShortMessage;
+
 public interface FlewpBotListener {
     void onWhisperMessage(WhisperEvent whisperEvent);
 
@@ -42,5 +44,5 @@ public interface FlewpBotListener {
 
     void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent);
 
-    void onMidiMessage(String message);
+    void onMidiMessage(String deviceName, ShortMessage message);
 }

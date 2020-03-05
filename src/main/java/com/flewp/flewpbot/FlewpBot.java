@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import retrofit2.Response;
 
 import javax.inject.Inject;
+import javax.sound.midi.ShortMessage;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -210,7 +211,32 @@ public class FlewpBot {
 
             @Override
             public void onMessage(String message) {
-                listenerList.forEach(listener -> listener.onMidiMessage(message));
+                if (message == null || message.isEmpty()) {
+                    return;
+                }
+
+                String[] split = message.split("\\$");
+                ShortMessage midi;
+
+                try {
+                    int parse = Integer.parseInt(split[1]);
+
+                    byte[] bytes = new byte[]{
+                            (byte) parse, // Command / Channel
+                            (byte) (parse >> 8), // Data byte 1
+                            (byte) (parse >> 16), // Data byte 2
+                    };
+
+                    midi = new ShortMessage(bytes[0] & 0xF0, bytes[0] & 0x0F, bytes[1], bytes[2]);
+                } catch (Exception e) {
+                    return;
+                }
+
+                if (split.length != 2) {
+                    return;
+                }
+
+                listenerList.forEach(listener -> listener.onMidiMessage(split[0], midi));
             }
 
             @Override

@@ -6,6 +6,8 @@ import com.flewp.flewpbot.FlewpBotListenerAdapter;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 
+import javax.sound.midi.ShortMessage;
+
 class FlewpBotConsole extends FlewpBotListenerAdapter {
     static FlewpBot flewpBot;
 
@@ -113,8 +115,8 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         }
 
         @Override
-        public void onMidiMessage(String message) {
-            System.out.println(message);
+        public void onMidiMessage(String deviceName, ShortMessage message) {
+            int i = 0;
         }
     }
 }
