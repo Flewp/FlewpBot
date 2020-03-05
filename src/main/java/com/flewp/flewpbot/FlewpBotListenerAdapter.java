@@ -99,4 +99,9 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
     public void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
 
     }
+
+    @Override
+    public void onMidiMessage(String message) {
+
+    }
 }

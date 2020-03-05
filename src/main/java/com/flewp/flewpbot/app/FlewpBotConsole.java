@@ -25,7 +25,6 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         @Override
         public void onChatMessage(ChatEvent chatEvent) {
             flewpBot.sendTwitchChatMessage(flewpBot.getTwitchUserPermission(chatEvent.getEventUser()));
-            int i = 0;
         }
 
         @Override
@@ -111,6 +110,11 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         @Override
         public void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
             int i = 0;
+        }
+
+        @Override
+        public void onMidiMessage(String message) {
+            System.out.println(message);
         }
     }
 }

@@ -11,16 +11,20 @@ import com.flewp.flewpbot.model.events.twitch.*;
 import com.flewp.flewpbot.pusher.PusherManager;
 import com.github.philippheuer.events4j.EventManager;
 import com.pusher.client.Pusher;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;
 
 import javax.inject.Inject;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FlewpBot {
     private Configuration configuration;
     private List<FlewpBotListener> listenerList = new ArrayList<>();
+    private WebSocketClient client;
 
     @Inject
     EventManager eventManager;
@@ -78,6 +82,10 @@ public class FlewpBot {
 
         if (configuration.isStreamlabsConnectable()) {
             streamlabsAPIController.startQueryingDonations();
+        }
+
+        if (configuration.enableMidi) {
+            connectWebSocket();
         }
 
         pusherManager.connect();
@@ -186,6 +194,37 @@ public class FlewpBot {
     synchronized private void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(commandsUpdatedEvent.toString());
         listenerList.forEach(listener -> listener.onCommandsUpdated(commandsUpdatedEvent));
+    }
+
+    private void connectWebSocket() {
+        if (client != null && (!client.isClosing() || !client.isClosed() || !client.isFlushAndClose())) {
+            client.close();
+            client = null;
+        }
+
+        WebSocketClient client = new WebSocketClient(URI.create("ws://[::1]:12321/midi")) {
+            @Override
+            public void onOpen(ServerHandshake handshakedata) {
+                LoggerFactory.getLogger(FlewpBot.class).info("MIDI Websocket opened! " + handshakedata.toString());
+            }
+
+            @Override
+            public void onMessage(String message) {
+                listenerList.forEach(listener -> listener.onMidiMessage(message));
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+                LoggerFactory.getLogger(FlewpBot.class).info("MIDI Websocket closed. " + reason);
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                LoggerFactory.getLogger(FlewpBot.class).info("MIDI Websocket error. Going to attempt reconnect." + ex.toString());
+                new Thread(FlewpBot.this::connectWebSocket).start();
+            }
+        };
+        client.connect();
     }
 
     synchronized public void sendMessage(String channel, String message) {

@@ -48,6 +48,7 @@ public class Configuration {
 
     public boolean webBrowserAvailable;
     public boolean enableIrc;
+    public boolean enableMidi;
 
     public boolean hasStreamlabsCredentials() {
         return streamLabsAccessToken != null && !streamLabsAccessToken.isEmpty() &&
