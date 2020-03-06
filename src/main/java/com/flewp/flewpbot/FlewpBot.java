@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import retrofit2.Response;
 
 import javax.inject.Inject;
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import java.net.URI;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class FlewpBot {
     private Configuration configuration;
     private List<FlewpBotListener> listenerList = new ArrayList<>();
     private WebSocketClient client;
+    private List<FlewpBotMIDIReceiver> receiverList = new ArrayList<>();
 
     @Inject
     EventManager eventManager;
@@ -238,7 +240,7 @@ public class FlewpBot {
                     return;
                 }
 
-                listenerList.forEach(listener -> listener.onMidiMessage(split[0], midi, timestamp));
+                sendMIDIMessage(split[0], midi, timestamp);
             }
 
             @Override
@@ -275,6 +277,31 @@ public class FlewpBot {
         } else {
             throw new IllegalStateException("You must set enableIrc to true in order to use this function");
         }
+    }
+
+    synchronized public void sendMIDIMessage(String deviceName, MidiMessage message, long timestamp) {
+        receiverList.stream().filter(receiver ->
+                receiver.isMatchExact() ? receiver.getName().equalsIgnoreCase(deviceName) :
+                        deviceName.toLowerCase().contains(receiver.getName().toLowerCase())
+        ).forEach(receiver -> {
+            receiver.getMidiMessageCallback().onMIDIMessage(deviceName, message, timestamp);
+        });
+    }
+
+    synchronized public void addMIDIReceiver(FlewpBotMIDIReceiver flewpBotMIDIReceiver) {
+        if (flewpBotMIDIReceiver == null) {
+            return;
+        }
+
+        receiverList.add(flewpBotMIDIReceiver);
+    }
+
+    synchronized public void removeMIDIReceiver(FlewpBotMIDIReceiver flewpBotMIDIReceiver) {
+        if (flewpBotMIDIReceiver == null) {
+            return;
+        }
+
+        receiverList.remove(flewpBotMIDIReceiver);
     }
 
     public TwitchAPI getTwitchAPI() {

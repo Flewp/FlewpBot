@@ -3,9 +3,12 @@ package com.flewp.flewpbot.app;
 import com.flewp.flewpbot.FlewpBot;
 import com.flewp.flewpbot.FlewpBotListener;
 import com.flewp.flewpbot.FlewpBotListenerAdapter;
+import com.flewp.flewpbot.FlewpBotMIDIReceiver;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 class FlewpBotConsole extends FlewpBotListenerAdapter {
@@ -14,7 +17,11 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
     public static void main(String[] args) {
         flewpBot = new FlewpBot();
         flewpBot.addListener(new ConsoleListener());
+        flewpBot.addMIDIReceiver(new FlewpBotMIDIReceiver((deviceName, midiMessage, timestamp) -> {
+            int i = 0;
+        }, "td-30", false));
         flewpBot.start();
+        flewpBot.sendMIDIMessage("3- TD-30WOW", new ShortMessage(), 0L);
     }
 
     private static class ConsoleListener implements FlewpBotListener {
@@ -111,11 +118,6 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
 
         @Override
         public void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
-            int i = 0;
-        }
-
-        @Override
-        public void onMidiMessage(String deviceName, ShortMessage message, int timestamp) {
             int i = 0;
         }
     }

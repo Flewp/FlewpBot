@@ -43,6 +43,4 @@ public interface FlewpBotListener {
     void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent);
 
     void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent);
-
-    void onMidiMessage(String deviceName, ShortMessage message, int timestamp);
 }
