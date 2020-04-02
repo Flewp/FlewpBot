@@ -47,7 +47,7 @@ public class DiscordAPIController extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         super.onMessageReceived(event);
 
-        ChatEvent chatEvent = new ChatEvent(null, event.getChannel().getId(), event.getMessage().getContentDisplay());
+        ChatEvent chatEvent = new ChatEvent(ChatEvent.MessageOrigin.Discord,null, event.getChannel().getId(), event.getMessage().getContentDisplay());
         eventManager.dispatchEvent(chatEvent);
     }
 
