@@ -1,6 +1,7 @@
 package com.flewp.flewpbot.api.controller;
 
 import com.flewp.flewpbot.Configuration;
+import com.flewp.flewpbot.EventManager;
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.RetrofitEmptyCallback;
 import com.flewp.flewpbot.api.TwitchAPI;
@@ -9,15 +10,12 @@ import com.flewp.flewpbot.model.api.GetUsersResponse;
 import com.flewp.flewpbot.model.api.JamispherePusherBody;
 import com.flewp.flewpbot.model.api.RefreshTokenResponse;
 import com.flewp.flewpbot.model.events.twitch.*;
-import com.github.philippheuer.events4j.EventManager;
 import com.google.gson.Gson;
 import net.engio.mbassy.listener.Handler;
 import okhttp3.OkHttpClient;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.defaults.element.DefaultUser;
 import org.kitteh.irc.client.library.element.MessageTag;
-import org.kitteh.irc.client.library.event.channel.ChannelKickEvent;
-import org.kitteh.irc.client.library.event.channel.ChannelPartEvent;
 import org.kitteh.irc.client.library.event.client.ClientReceiveCommandEvent;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
 import org.kitteh.irc.client.library.event.connection.ClientConnectionEndedEvent;

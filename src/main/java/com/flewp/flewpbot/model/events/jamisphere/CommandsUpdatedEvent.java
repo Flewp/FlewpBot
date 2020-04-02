@@ -1,11 +1,11 @@
 package com.flewp.flewpbot.model.events.jamisphere;
 
+import com.flewp.flewpbot.model.events.BaseEvent;
 import com.flewp.flewpbot.model.jamisphere.JamisphereCommand;
-import com.github.philippheuer.events4j.domain.Event;
 
 import java.util.List;
 
-public class CommandsUpdatedEvent extends Event {
+public class CommandsUpdatedEvent extends BaseEvent {
     public List<JamisphereCommand> commands;
     public String operation;
 

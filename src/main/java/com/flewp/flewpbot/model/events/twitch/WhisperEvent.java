@@ -1,8 +1,8 @@
 package com.flewp.flewpbot.model.events.twitch;
 
-import com.github.philippheuer.events4j.domain.Event;
+import com.flewp.flewpbot.model.events.BaseEvent;
 
-public class WhisperEvent extends Event {
+public class WhisperEvent extends BaseEvent {
     private EventUser eventUser;
     private String target;
     private String message;

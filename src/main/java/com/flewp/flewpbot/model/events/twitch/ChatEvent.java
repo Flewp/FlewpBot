@@ -1,8 +1,8 @@
 package com.flewp.flewpbot.model.events.twitch;
 
-import com.github.philippheuer.events4j.domain.Event;
+import com.flewp.flewpbot.model.events.BaseEvent;
 
-public class ChatEvent extends Event {
+public class ChatEvent extends BaseEvent {
     private EventUser eventUser;
     private String chatRoomId;
     private String message;
@@ -27,6 +27,6 @@ public class ChatEvent extends Event {
 
     @Override
     public String toString() {
-        return "ChatEvent [ " + eventUser.toString() + ", chatRoomID: " + chatRoomId + ", message: " + message + " ]";
+        return "ChatEvent [ " + (eventUser == null ? "null" : eventUser.toString()) + ", chatRoomID: " + chatRoomId + ", message: " + message + " ]";
     }
 }

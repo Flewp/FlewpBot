@@ -1,9 +1,9 @@
 package com.flewp.flewpbot.model.events.twitch;
 
+import com.flewp.flewpbot.model.events.BaseEvent;
 import com.flewp.flewpbot.model.streamlabs.StreamlabsDonation;
-import com.github.philippheuer.events4j.domain.Event;
 
-public class NewDonationEvent extends Event {
+public class NewDonationEvent extends BaseEvent {
     private StreamlabsDonation donation;
 
     public NewDonationEvent(StreamlabsDonation donation) {

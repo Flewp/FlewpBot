@@ -6,13 +6,13 @@ import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.authenticator.JamisphereAuthenticator;
 import com.flewp.flewpbot.api.authenticator.StreamlabsAuthenticator;
 import com.flewp.flewpbot.api.authenticator.TwitchAuthenticator;
+import com.flewp.flewpbot.api.controller.DiscordAPIController;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.api.interceptor.JamisphereRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.StreamlabsRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.TwitchRequestInterceptor;
 import com.flewp.flewpbot.pusher.PusherManager;
-import com.github.philippheuer.events4j.EventManager;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -142,6 +142,12 @@ class FlewpBotModule {
     public StreamlabsAPIController provideStreamlabsAPIController(Configuration configuration, EventManager eventManager,
                                                                   StreamlabsAPI streamlabsAPI, JamisphereAPI jamisphereAPI) {
         return new StreamlabsAPIController(configuration, eventManager, streamlabsAPI, jamisphereAPI);
+    }
+
+    @Provides
+    @Singleton
+    public DiscordAPIController provideDiscordAPIController(Configuration configuration, EventManager eventManager) {
+        return new DiscordAPIController(configuration, eventManager);
     }
 
     @Provides

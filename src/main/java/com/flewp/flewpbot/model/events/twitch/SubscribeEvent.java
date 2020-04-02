@@ -1,11 +1,11 @@
 package com.flewp.flewpbot.model.events.twitch;
 
-import com.github.philippheuer.events4j.domain.Event;
+import com.flewp.flewpbot.model.events.BaseEvent;
 
 import java.util.Arrays;
 import java.util.Map;
 
-public class SubscribeEvent extends Event {
+public class SubscribeEvent extends BaseEvent {
     private Type type;
     private EventUser eventUser;
     private EventUser recipientUser;

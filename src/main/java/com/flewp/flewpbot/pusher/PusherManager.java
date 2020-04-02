@@ -1,11 +1,11 @@
 package com.flewp.flewpbot.pusher;
 
 import com.flewp.flewpbot.Configuration;
+import com.flewp.flewpbot.EventManager;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.BitEvent;
 import com.flewp.flewpbot.model.events.twitch.NewDonationEvent;
 import com.flewp.flewpbot.model.events.twitch.SubscribeEvent;
-import com.github.philippheuer.events4j.EventManager;
 import com.google.gson.Gson;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;

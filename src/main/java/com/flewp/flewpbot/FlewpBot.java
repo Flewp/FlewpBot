@@ -3,13 +3,13 @@ package com.flewp.flewpbot;
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.StreamlabsAPI;
 import com.flewp.flewpbot.api.TwitchAPI;
+import com.flewp.flewpbot.api.controller.DiscordAPIController;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.model.api.GetFollowsResponse;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 import com.flewp.flewpbot.pusher.PusherManager;
-import com.github.philippheuer.events4j.EventManager;
 import com.pusher.client.Pusher;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -29,6 +29,7 @@ public class FlewpBot {
     private WebSocketClient client;
     private List<FlewpBotMIDIReceiver> receiverList = new ArrayList<>();
 
+
     @Inject
     EventManager eventManager;
 
@@ -46,6 +47,9 @@ public class FlewpBot {
 
     @Inject
     StreamlabsAPIController streamlabsAPIController;
+
+    @Inject
+    DiscordAPIController discordAPIController;
 
     @Inject
     PusherManager pusherManager;
@@ -90,6 +94,8 @@ public class FlewpBot {
         if (configuration.enableMidi) {
             connectWebSocket();
         }
+
+        discordAPIController.start();
 
         pusherManager.connect();
     }
@@ -258,7 +264,7 @@ public class FlewpBot {
     }
 
     synchronized public void sendMessage(String channel, String message) {
-        if (twitchAPIController != null) {
+        if (configuration.enableIrc) {
             twitchAPIController.getIrcClient().sendMessage(channel, message);
         } else {
             throw new IllegalStateException("You must set enableIrc to true in order to use this function");
@@ -266,13 +272,13 @@ public class FlewpBot {
     }
 
     synchronized public void sendWhisper(String userName, String message) {
-        if (twitchAPIController != null) {
+        if (configuration.enableIrc) {
             twitchAPIController.getIrcClient().sendMessage("#jtv", "/w " + userName + ' ' + message);
         }
     }
 
     synchronized public void sendTwitchChatMessage(String message) {
-        if (twitchAPIController != null) {
+        if (configuration.enableIrc) {
             twitchAPIController.getIrcClient().sendMessage("#" + configuration.twitchStreamerName, message);
         } else {
             throw new IllegalStateException("You must set enableIrc to true in order to use this function");
@@ -302,6 +308,14 @@ public class FlewpBot {
         }
 
         receiverList.remove(flewpBotMIDIReceiver);
+    }
+
+    synchronized public void sendDiscordMessage(String channelId, String message) {
+        if (configuration.discordToken != null) {
+            discordAPIController.sendMessage(channelId, message);
+        } else {
+            throw new IllegalStateException("You must set discordToken in order to use this function");
+        }
     }
 
     public TwitchAPI getTwitchAPI() {

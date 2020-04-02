@@ -1,9 +1,9 @@
 package com.flewp.flewpbot.model.events.jamisphere;
 
+import com.flewp.flewpbot.model.events.BaseEvent;
 import com.flewp.flewpbot.model.jamisphere.JamisphereChoiceGame;
-import com.github.philippheuer.events4j.domain.Event;
 
-public class ChoiceGameAnsweredEvent extends Event {
+public class ChoiceGameAnsweredEvent extends BaseEvent {
     public JamisphereChoiceGame choiceGame;
 
     @Override

@@ -1,8 +1,8 @@
 package com.flewp.flewpbot.model.events.jamisphere;
 
-import com.github.philippheuer.events4j.domain.Event;
+import com.flewp.flewpbot.model.events.BaseEvent;
 
-public class RequestLikedEvent extends Event {
+public class RequestLikedEvent extends BaseEvent {
     public String requestId;
     public Integer likes;
 

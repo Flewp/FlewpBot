@@ -1,6 +1,7 @@
 package com.flewp.flewpbot.api.controller;
 
 import com.flewp.flewpbot.Configuration;
+import com.flewp.flewpbot.EventManager;
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.RetrofitEmptyCallback;
 import com.flewp.flewpbot.api.StreamlabsAPI;
@@ -10,7 +11,6 @@ import com.flewp.flewpbot.model.api.JamispherePusherBody;
 import com.flewp.flewpbot.model.api.RefreshStreamlabsTokenResponse;
 import com.flewp.flewpbot.model.events.twitch.NewDonationEvent;
 import com.flewp.flewpbot.model.streamlabs.StreamlabsDonation;
-import com.github.philippheuer.events4j.EventManager;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;

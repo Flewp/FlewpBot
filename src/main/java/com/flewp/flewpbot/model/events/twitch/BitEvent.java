@@ -1,8 +1,8 @@
 package com.flewp.flewpbot.model.events.twitch;
 
-import com.github.philippheuer.events4j.domain.Event;
+import com.flewp.flewpbot.model.events.BaseEvent;
 
-public class BitEvent extends Event {
+public class BitEvent extends BaseEvent {
     private EventUser eventUser;
     private String message;
     private int bits;

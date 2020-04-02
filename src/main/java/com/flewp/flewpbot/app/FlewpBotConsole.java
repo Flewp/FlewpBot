@@ -33,7 +33,8 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
 
         @Override
         public void onChatMessage(ChatEvent chatEvent) {
-            flewpBot.sendTwitchChatMessage(flewpBot.getTwitchUserPermission(chatEvent.getEventUser()));
+            flewpBot.sendTwitchChatMessage("wow");
+//            flewpBot.sendTwitchChatMessage(flewpBot.getTwitchUserPermission(chatEvent.getEventUser()));
         }
 
         @Override

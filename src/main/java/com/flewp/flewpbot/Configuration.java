@@ -46,6 +46,8 @@ public class Configuration {
     public String pusherKey;
     public String pusherCluster;
 
+    public String discordToken;
+
     public boolean webBrowserAvailable;
     public boolean enableIrc = false;
     public boolean enableMidi = false;
