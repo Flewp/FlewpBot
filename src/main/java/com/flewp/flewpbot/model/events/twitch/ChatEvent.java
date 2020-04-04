@@ -31,13 +31,13 @@ public class ChatEvent extends BaseEvent {
         return message;
     }
 
+    public MessageOrigin getMessageOrigin() {
+        return messageOrigin;
+    }
+
     @Override
     public String toString() {
         return "ChatEvent [ " + (eventUser == null ? "null" : eventUser.toString()) + ", chatRoomID: " + chatRoomId + ", message: " + message + " ]";
     }
 
-    public enum MessageOrigin {
-        TwitchChat,
-        Discord
-    }
 }

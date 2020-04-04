@@ -157,7 +157,7 @@ public class TwitchAPIController {
 
     @Handler
     public void onWhisper(org.kitteh.irc.client.library.feature.twitch.event.WhisperEvent event) {
-        eventManager.dispatchEvent(new WhisperEvent(new EventUser(messageTagsToMap(event.getTags()),
+        eventManager.dispatchEvent(new ChatEvent(MessageOrigin.TwitchWhisper, new EventUser(messageTagsToMap(event.getTags()),
                 event.getActor().getNick()), event.getTarget(), event.getMessage()));
 
         LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());

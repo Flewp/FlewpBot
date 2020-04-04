@@ -61,7 +61,6 @@ public class FlewpBot {
                 .flewpBotModule(new FlewpBotModule(configuration))
                 .build().inject(this);
 
-        eventManager.onEvent(WhisperEvent.class).subscribe(this::onWhisperMessage);
         eventManager.onEvent(ChatEvent.class).subscribe(this::onChatMessage);
         eventManager.onEvent(BitEvent.class).subscribe(this::onCheer);
         eventManager.onEvent(SubscribeEvent.class).subscribe(this::onSubscribe);
@@ -128,11 +127,6 @@ public class FlewpBot {
     synchronized private void onChatMessage(ChatEvent chatEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(chatEvent.toString());
         listenerList.forEach(listener -> listener.onChatMessage(chatEvent));
-    }
-
-    synchronized private void onWhisperMessage(WhisperEvent whisperEvent) {
-        LoggerFactory.getLogger(FlewpBot.class).info(whisperEvent.toString());
-        listenerList.forEach(listener -> listener.onWhisperMessage(whisperEvent));
     }
 
     synchronized private void onGuessingGameAnswered(GuessingGameAnsweredEvent guessingGameAnsweredEvent) {

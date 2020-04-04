@@ -8,11 +8,6 @@ import javax.sound.midi.ShortMessage;
 public class FlewpBotListenerAdapter implements FlewpBotListener {
 
     @Override
-    public void onWhisperMessage(WhisperEvent whisperEvent) {
-
-    }
-
-    @Override
     public void onChatMessage(ChatEvent chatEvent) {
 
     }

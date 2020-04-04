@@ -3,6 +3,7 @@ package com.flewp.flewpbot.api.controller;
 import com.flewp.flewpbot.Configuration;
 import com.flewp.flewpbot.EventManager;
 import com.flewp.flewpbot.model.events.twitch.ChatEvent;
+import com.flewp.flewpbot.model.events.twitch.MessageOrigin;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -47,7 +48,7 @@ public class DiscordAPIController extends ListenerAdapter {
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         super.onMessageReceived(event);
 
-        ChatEvent chatEvent = new ChatEvent(ChatEvent.MessageOrigin.Discord,null, event.getChannel().getId(), event.getMessage().getContentDisplay());
+        ChatEvent chatEvent = new ChatEvent(MessageOrigin.Discord,null, event.getChannel().getId(), event.getMessage().getContentDisplay());
         eventManager.dispatchEvent(chatEvent);
     }
 

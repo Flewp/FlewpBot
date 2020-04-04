@@ -25,12 +25,6 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
     }
 
     private static class ConsoleListener implements FlewpBotListener {
-
-        @Override
-        public void onWhisperMessage(WhisperEvent whisperEvent) {
-            int i = 0;
-        }
-
         @Override
         public void onChatMessage(ChatEvent chatEvent) {
             flewpBot.sendTwitchChatMessage("wow");

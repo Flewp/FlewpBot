@@ -6,8 +6,6 @@ import com.flewp.flewpbot.model.events.twitch.*;
 import javax.sound.midi.ShortMessage;
 
 public interface FlewpBotListener {
-    void onWhisperMessage(WhisperEvent whisperEvent);
-
     void onChatMessage(ChatEvent chatEvent);
 
     void onCheer(BitEvent bitEvent);
