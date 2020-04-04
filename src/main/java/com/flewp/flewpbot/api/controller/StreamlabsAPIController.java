@@ -1,13 +1,16 @@
 package com.flewp.flewpbot.api.controller;
 
 import com.flewp.flewpbot.Configuration;
+import com.flewp.flewpbot.EventManager;
+import com.flewp.flewpbot.api.JamisphereAPI;
+import com.flewp.flewpbot.api.RetrofitEmptyCallback;
 import com.flewp.flewpbot.api.StreamlabsAPI;
 import com.flewp.flewpbot.api.StreamlabsTokenAPI;
-import com.flewp.flewpbot.event.NewDonationEvent;
 import com.flewp.flewpbot.model.api.GetDonationsResponse;
+import com.flewp.flewpbot.model.api.JamispherePusherBody;
 import com.flewp.flewpbot.model.api.RefreshStreamlabsTokenResponse;
+import com.flewp.flewpbot.model.events.twitch.NewDonationEvent;
 import com.flewp.flewpbot.model.streamlabs.StreamlabsDonation;
-import com.github.philippheuer.events4j.EventManager;
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
 import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
@@ -18,6 +21,7 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;
@@ -34,27 +38,36 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class StreamlabsAPIController {
+    private Gson gson = new Gson();
+
     private Configuration configuration;
     private EventManager eventManager;
     private StreamlabsAPI streamlabsAPI;
+    private JamisphereAPI jamisphereAPI;
 
     private Integer previousDonation = 1;
 
-    public StreamlabsAPIController(Configuration configuration, EventManager eventManager, StreamlabsAPI streamlabsAPI) {
+    public StreamlabsAPIController(Configuration configuration, EventManager eventManager, StreamlabsAPI streamlabsAPI, JamisphereAPI jamisphereAPI) {
         this.configuration = configuration;
         this.eventManager = eventManager;
         this.streamlabsAPI = streamlabsAPI;
+        this.jamisphereAPI = jamisphereAPI;
+
+        if (!configuration.isStreamlabsConnectable()) {
+            LoggerFactory.getLogger(StreamlabsAPIController.class).info("StreamLabs credentials not provided. StreamLabs will not be connected");
+            return;
+        }
     }
 
     public static void refreshCredentials(Configuration configuration) {
         String accessToken = null;
         String refreshToken = null;
 
-        try {
-            if (!configuration.hasStreamlabsCredentials() && !configuration.webBrowserAvailable) {
-                throw new IllegalStateException("This instance doesn't have access to a web browser, and has no starting Streamlabs credentials.");
-            }
+        if (!configuration.isStreamlabsConnectable()) {
+            return;
+        }
 
+        try {
             if (configuration.hasStreamlabsCredentials()) {
                 StreamlabsTokenAPI streamlabsTokenAPI = new Retrofit.Builder()
                         .baseUrl("https://streamlabs.com/api/v1.0/")
@@ -122,14 +135,22 @@ public class StreamlabsAPIController {
     }
 
     public synchronized void startQueryingDonations() {
+        if (!configuration.isStreamlabsConnectable()) {
+            return;
+        }
+
         getNewDonations();
 
         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
         service.scheduleAtFixedRate(() -> {
             List<StreamlabsDonation> newDonations = getNewDonations();
             if (newDonations != null && !newDonations.isEmpty()) {
-                newDonations.forEach(donation ->
-                        eventManager.dispatchEvent(new NewDonationEvent(donation)));
+                newDonations.forEach(donation -> {
+                    NewDonationEvent event = new NewDonationEvent(donation);
+                    jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(event).getAsJsonObject(),
+                            "jamisphere", "streamlabsDonation")).enqueue(new RetrofitEmptyCallback<>());
+                    eventManager.dispatchEvent(event);
+                });
             }
         }, 10, 10, TimeUnit.SECONDS);
     }
@@ -159,6 +180,10 @@ public class StreamlabsAPIController {
     }
 
     public StreamlabsAPI getStreamlabsAPI() {
+        if (!configuration.isStreamlabsConnectable()) {
+            throw new IllegalStateException("The StreamLabs credentials are not setup, cannot get API.");
+        }
+
         return streamlabsAPI;
     }
 }

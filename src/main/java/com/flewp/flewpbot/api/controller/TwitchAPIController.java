@@ -1,47 +1,54 @@
 package com.flewp.flewpbot.api.controller;
 
 import com.flewp.flewpbot.Configuration;
-import com.flewp.flewpbot.api.TwitchHelixAPI;
-import com.flewp.flewpbot.api.TwitchKrakenAPI;
+import com.flewp.flewpbot.EventManager;
+import com.flewp.flewpbot.api.JamisphereAPI;
+import com.flewp.flewpbot.api.RetrofitEmptyCallback;
+import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.TwitchTokenGeneratorAPI;
-import com.flewp.flewpbot.event.*;
-import com.flewp.flewpbot.model.api.ChatRoomsResponse;
 import com.flewp.flewpbot.model.api.GetUsersResponse;
+import com.flewp.flewpbot.model.api.JamispherePusherBody;
 import com.flewp.flewpbot.model.api.RefreshTokenResponse;
-import com.flewp.flewpbot.model.kraken.KrakenChatRoom;
-import com.github.philippheuer.events4j.EventManager;
+import com.flewp.flewpbot.model.events.twitch.*;
+import com.google.gson.Gson;
+import net.engio.mbassy.listener.Handler;
 import okhttp3.OkHttpClient;
-import org.pircbotx.PircBotX;
-import org.pircbotx.hooks.Event;
-import org.pircbotx.hooks.Listener;
-import org.pircbotx.hooks.events.DisconnectEvent;
-import org.pircbotx.hooks.events.JoinEvent;
-import org.pircbotx.hooks.events.MessageEvent;
-import org.pircbotx.hooks.events.UnknownEvent;
+import org.kitteh.irc.client.library.Client;
+import org.kitteh.irc.client.library.defaults.element.DefaultUser;
+import org.kitteh.irc.client.library.element.MessageTag;
+import org.kitteh.irc.client.library.event.client.ClientReceiveCommandEvent;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionClosedEvent;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionEndedEvent;
+import org.kitteh.irc.client.library.event.connection.ClientConnectionFailedEvent;
+import org.kitteh.irc.client.library.feature.filter.CommandFilter;
+import org.kitteh.irc.client.library.feature.twitch.TwitchSupport;
+import org.kitteh.irc.client.library.feature.twitch.event.UserNoticeEvent;
 import org.slf4j.LoggerFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
-public class TwitchAPIController implements Listener {
+public class TwitchAPIController {
+    private Gson gson = new Gson();
+
     private Configuration configuration;
     private EventManager eventManager;
-    private TwitchKrakenAPI twitchKrakenAPI;
-    private TwitchHelixAPI twitchHelixAPI;
+    private TwitchAPI twitchAPI;
+    private JamisphereAPI jamisphereAPI;
 
-    private boolean joinedChatRooms;
-    private List<KrakenChatRoom> chatRoomList = new ArrayList<>();
     private String channelId;
     private String streamerUserId;
 
     private ExecutorService botExecutorService;
-    private PircBotX pircBotX;
+    private Client ircClient;
 
     public static void refreshCredentials(Configuration configuration) {
         try {
@@ -68,145 +75,123 @@ public class TwitchAPIController implements Listener {
         }
     }
 
-    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchKrakenAPI twitchKrakenAPI, TwitchHelixAPI twitchHelixAPI) {
+    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI) {
         this.configuration = configuration;
         this.eventManager = eventManager;
-        this.twitchKrakenAPI = twitchKrakenAPI;
-        this.twitchHelixAPI = twitchHelixAPI;
-
-        botExecutorService = Executors.newSingleThreadExecutor();
-
-        pircBotX = new PircBotX(new org.pircbotx.Configuration.Builder()
-                .setAutoNickChange(false)
-                .setOnJoinWhoEnabled(false)
-                .setCapEnabled(true)
-                .addServer("irc.twitch.tv")
-                .setName(configuration.twitchChatBotName)
-                .setServerPassword(configuration.twitchChatBotAccessToken)
-                .addAutoJoinChannel("#" + configuration.twitchStreamerName)
-                .addListener(this)
-                .buildConfiguration());
-
-        joinedChatRooms = false;
+        this.twitchAPI = twitchAPI;
+        this.jamisphereAPI = jamisphereAPI;
     }
 
     public synchronized void startChatBot() {
         try {
-            determineChatRoomList();
+            botExecutorService = Executors.newSingleThreadExecutor();
+
+            ircClient = Client.builder()
+                    .server().host("irc.chat.twitch.tv").port(443)
+                    .password(configuration.twitchChatBotAccessToken).then()
+                    .nick(configuration.twitchChatBotName)
+                    .build();
+
+            TwitchSupport.addSupport(ircClient);
+
+            // Get user ID from given streamer name
+            Response<GetUsersResponse> getUsersResponse = twitchAPI.getUsers(null,
+                    Collections.singletonList(configuration.twitchStreamerName)).execute();
+
+            if (!getUsersResponse.isSuccessful() || getUsersResponse.body() == null ||
+                    getUsersResponse.body().data == null || getUsersResponse.body().data.isEmpty()) {
+                LoggerFactory.getLogger(TwitchAPIController.class).error("Can't get streamer ID to query chat rooms");
+                return;
+            }
+
+            streamerUserId = getUsersResponse.body().data.get(0).id;
+
+            // This may change down the road, but as far as Twitch is concerned, these are the same.
+            channelId = streamerUserId;
+
+            ircClient.getEventManager().registerEventListener(this);
+            ircClient.addChannel("#" + configuration.twitchStreamerName);
 
             botExecutorService.submit(() -> {
                 try {
-                    pircBotX.startBot();
+                    ircClient.connect();
                 } catch (Exception e) {
-                    LoggerFactory.getLogger(TwitchAPIController.class).error("Error in PircBot", e);
+                    LoggerFactory.getLogger(TwitchAPIController.class).error("Error in Kitteh", e);
                 }
             });
 
         } catch (Exception e) {
-            LoggerFactory.getLogger(TwitchAPIController.class).error("Error in connecting PircBot", e);
+            LoggerFactory.getLogger(TwitchAPIController.class).error("Error in connecting Kitteh", e);
         }
     }
 
-    private void determineChatRoomList() throws Exception {
-        // Get user ID from given streamer name
-        Response<GetUsersResponse> getUsersResponse = twitchHelixAPI.getUsers(null,
-                Collections.singletonList(configuration.twitchStreamerName)).execute();
-
-        if (!getUsersResponse.isSuccessful() || getUsersResponse.body() == null ||
-                getUsersResponse.body().data == null || getUsersResponse.body().data.isEmpty()) {
-            LoggerFactory.getLogger(TwitchAPIController.class).error("Can't get streamer ID to query chat rooms");
+    @CommandFilter("PRIVMSG")
+    @Handler
+    public void onMessage(ClientReceiveCommandEvent event) {
+        if (event.getParameters().size() != 2) {
             return;
         }
 
-        streamerUserId = getUsersResponse.body().data.get(0).id;
+        Optional<MessageTag> bits = event.getTag("bits");
+        int bitsInt = -1;
+        if (bits.isPresent() && bits.get().getValue().isPresent()) {
+            try {
+                bitsInt = Integer.parseInt(bits.get().getValue().get());
 
-        // This may change down the road, but as far as Kraken is concerned, these are the same.
-        channelId = streamerUserId;
+            } catch (Exception e) {
 
-        // Get chat rooms for streamer
-        Response<ChatRoomsResponse> chatRoomsResponse = twitchKrakenAPI.chatRooms(streamerUserId).execute();
-
-        if (chatRoomsResponse.isSuccessful() && chatRoomsResponse.body() != null
-                && chatRoomsResponse.body().getRooms() != null) {
-            chatRoomList = chatRoomsResponse.body().getRooms();
-        }
-    }
-
-    @Override
-    public void onEvent(Event event) {
-        LoggerFactory.getLogger(TwitchAPIController.class).info("Received IRC Event: " + event.toString());
-        try {
-            if (event instanceof JoinEvent) {
-                if (joinedChatRooms) {
-                    return;
-                }
-
-                joinedChatRooms = true;
-
-                if (chatRoomList != null && !chatRoomList.isEmpty()) {
-                    for (KrakenChatRoom chatRoom : chatRoomList) {
-                        pircBotX.sendRaw().rawLine("JOIN #chatrooms:" + channelId + ":" + chatRoom._id);
-                    }
-                }
-
-                pircBotX.sendRaw().rawLine("CAP REQ :twitch.tv/tags twitch.tv/commands");
-                LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has successfully connected to chat.");
-            } else if (event instanceof MessageEvent) {
-                MessageEvent messageEvent = (MessageEvent) event;
-                if (messageEvent.getTags() == null || messageEvent.getUser() == null || messageEvent.getUser().getNick() == null) {
-                    return;
-                }
-
-                if (messageEvent.getTags().containsKey("bits")) {
-                    try {
-                        eventManager.dispatchEvent(new BitEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
-                                messageEvent.getMessage(), Integer.parseInt(messageEvent.getTags().get("bits"))));
-                    } catch (Exception e) {
-                        LoggerFactory.getLogger(TwitchAPIController.class).error("Error in parsing bits: ", e);
-                    }
-                } else if (messageEvent.getChannel() != null && messageEvent.getChannel().getName() != null) {
-                    String chatRoomId = messageEvent.getChannel().getName()
-                            .substring(messageEvent.getChannel().getName().lastIndexOf(":") + 1);
-
-                    eventManager.dispatchEvent(new ChatEvent(new EventUser(messageEvent.getTags(), messageEvent.getUser().getNick()),
-                            chatRoomList.stream().filter(room -> room._id.equals(chatRoomId)).findFirst().orElse(null),
-                            chatRoomId, messageEvent.getMessage()));
-                }
-            } else if (event instanceof UnknownEvent) {
-                UnknownEvent unknownEvent = (UnknownEvent) event;
-                if (unknownEvent.getTags() == null || unknownEvent.getNick() == null || unknownEvent.getParsedLine() == null) {
-                    return;
-                }
-
-                switch (unknownEvent.getCommand()) {
-                    case "WHISPER":
-                        eventManager.dispatchEvent(new WhisperEvent(new EventUser(unknownEvent.getTags(), unknownEvent.getNick()),
-                                unknownEvent.getTarget(), unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1)));
-                        break;
-                    case "USERNOTICE":
-                        SubscribeEvent subscribeEvent = SubscribeEvent.parse(unknownEvent.getTags(),
-                                (unknownEvent.getParsedLine() == null || unknownEvent.getParsedLine().isEmpty()) ? "" :
-                                        unknownEvent.getParsedLine().get(unknownEvent.getParsedLine().size() - 1), unknownEvent.getTags().get("login"));
-
-                        if (subscribeEvent != null) {
-                            eventManager.dispatchEvent(subscribeEvent);
-                        }
-                        break;
-                }
-            } else if (event instanceof DisconnectEvent) {
-                LoggerFactory.getLogger(TwitchAPIController.class).info("FlewpBot has disconnected from chat.");
             }
-        } catch (Exception e) {
-            LoggerFactory.getLogger(TwitchAPIController.class).info("Exception in FlewpBot: " + e.getMessage());
+        }
+
+        if (bitsInt > 0) {
+            BitEvent bitEvent = new BitEvent(new EventUser(messageTagsToMap(event.getTags()),
+                    ((DefaultUser) event.getActor()).getNick()), event.getParameters().get(1), bitsInt);
+            jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(bitEvent).getAsJsonObject(), "jamisphere", "twitchCheer")).enqueue(new RetrofitEmptyCallback<>());
+            eventManager.dispatchEvent(bitEvent);
+        } else {
+            String chatRoomId = event.getParameters().get(0).substring(event.getParameters().get(0).indexOf(":") + 1);
+            eventManager.dispatchEvent(new ChatEvent(new EventUser(messageTagsToMap(event.getTags()),
+                    ((DefaultUser) event.getActor()).getNick()), chatRoomId, event.getParameters().get(1)));
         }
     }
 
-    public PircBotX getPircBotX() {
-        return pircBotX;
+    @Handler
+    public void onWhisper(org.kitteh.irc.client.library.feature.twitch.event.WhisperEvent event) {
+        eventManager.dispatchEvent(new ChatEvent(MessageOrigin.TwitchWhisper, new EventUser(messageTagsToMap(event.getTags()),
+                event.getActor().getNick()), event.getTarget(), event.getMessage()));
+
+        LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());
     }
 
-    public List<KrakenChatRoom> getChatRoomList() {
-        return chatRoomList;
+    @Handler
+    public void onUserNotice(UserNoticeEvent event) {
+        String login = "";
+        if (event.getTag("login").isPresent() && event.getTag("login").get().getValue().isPresent()) {
+            login = event.getTag("login").get().getValue().get();
+        }
+
+        SubscribeEvent subscribeEvent = SubscribeEvent.parse(messageTagsToMap(event.getTags()),
+                event.getMessage().orElse(""), login);
+
+        if (subscribeEvent != null) {
+            jamisphereAPI.pusher(new JamispherePusherBody(gson.toJsonTree(subscribeEvent).getAsJsonObject(), "jamisphere", "twitchSubscribe")).enqueue(new RetrofitEmptyCallback<>());
+            eventManager.dispatchEvent(subscribeEvent);
+        }
+    }
+
+    @Handler
+    public void onDisconnect(ClientConnectionClosedEvent event) {
+        LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());
+    }
+
+    @Handler
+    public void onDisconnect(ClientConnectionEndedEvent event) {
+        LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());
+    }
+
+    @Handler
+    public void onDisconnect(ClientConnectionFailedEvent event) {
+        LoggerFactory.getLogger(TwitchAPIController.class).info(event.toString());
     }
 
     public String getStreamerUserId() {
@@ -215,5 +200,13 @@ public class TwitchAPIController implements Listener {
 
     public String getStreamerChannelId() {
         return channelId;
+    }
+
+    public Client getIrcClient() {
+        return ircClient;
+    }
+
+    private Map<String, String> messageTagsToMap(List<MessageTag> tags) {
+        return tags.stream().collect(Collectors.toMap(MessageTag::getName, o -> o.getValue().orElse("")));
     }
 }

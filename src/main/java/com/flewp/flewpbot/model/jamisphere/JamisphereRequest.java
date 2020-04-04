@@ -1,6 +1,6 @@
 package com.flewp.flewpbot.model.jamisphere;
 
-public class JamisphereRequest {
+public class JamisphereRequest implements Comparable<JamisphereRequest> {
     public String requestId;
 
     public Boolean inList;
@@ -13,10 +13,43 @@ public class JamisphereRequest {
     public Long youtubeSongLikes;
     public Long youtubeSongDislikes;
     public Long youtubeSongViews;
+    public String youtubeThumbnail;
 
     public String twitchUserName;
     public String twitchUserId;
+    public String twitchProfilePicture;
 
     public String timePlayed; // ISO String of time played
     public Long streamUptimePlayed; // Time in milliseconds that the stream has been live when played
+
+    @Override
+    public int compareTo(JamisphereRequest o) {
+        if (status != null && o.status != null && !status.equals(o.status)) {
+            return o.status.compareTo(status);
+        }
+
+        return requestId.compareTo(o.requestId);
+    }
+
+    @Override
+    public String toString() {
+        return "JamisphereRequest{" +
+                "requestId='" + requestId + '\'' +
+                ", inList=" + inList +
+                ", playing=" + playing +
+                ", status=" + status +
+                ", likes=" + likes +
+                ", youtubeVideoId='" + youtubeVideoId + '\'' +
+                ", youtubeSongTitle='" + youtubeSongTitle + '\'' +
+                ", youtubeSongLikes=" + youtubeSongLikes +
+                ", youtubeSongDislikes=" + youtubeSongDislikes +
+                ", youtubeSongViews=" + youtubeSongViews +
+                ", youtubeThumbnail='" + youtubeThumbnail + '\'' +
+                ", twitchUserName='" + twitchUserName + '\'' +
+                ", twitchUserId='" + twitchUserId + '\'' +
+                ", twitchProfilePicture='" + twitchProfilePicture + '\'' +
+                ", timePlayed='" + timePlayed + '\'' +
+                ", streamUptimePlayed=" + streamUptimePlayed +
+                '}';
+    }
 }

@@ -18,7 +18,6 @@ public class Configuration {
             } catch (IOException e) {
             }
         }
-
         if (configuration == null) {
             throw new RuntimeException("Create a config.yaml based off the config-template.yaml and fill in the fields: looking in " + file.getAbsolutePath());
         }
@@ -44,12 +43,23 @@ public class Configuration {
     public String streamLabsAccessToken;
     public String streamLabsRefreshToken;
 
+    public String pusherKey;
+    public String pusherCluster;
+
+    public String discordToken;
+
     public boolean webBrowserAvailable;
+    public boolean enableIrc = false;
+    public boolean enableMidi = false;
 
     public boolean hasStreamlabsCredentials() {
         return streamLabsAccessToken != null && !streamLabsAccessToken.isEmpty() &&
                 !streamLabsAccessToken.equalsIgnoreCase("empty") && streamLabsRefreshToken != null &&
                 !streamLabsRefreshToken.isEmpty() && !streamLabsRefreshToken.equalsIgnoreCase("empty");
+    }
+
+    public boolean isStreamlabsConnectable() {
+        return hasStreamlabsCredentials() || webBrowserAvailable;
     }
 
     public void dumpFile() {

@@ -17,4 +17,10 @@ streamLabsClientID: empty
 streamLabsClientSecret: empty
 streamLabsToken: empty
 
+# Pusher properties
+pusherKey: empty
+pusherCluster: empty
 
+# Option to enable IRC
+enableIrc: true
+webBrowserAvailable: true

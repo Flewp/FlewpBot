@@ -2,18 +2,17 @@ package com.flewp.flewpbot;
 
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.StreamlabsAPI;
-import com.flewp.flewpbot.api.TwitchHelixAPI;
-import com.flewp.flewpbot.api.TwitchKrakenAPI;
+import com.flewp.flewpbot.api.TwitchAPI;
+import com.flewp.flewpbot.api.authenticator.JamisphereAuthenticator;
 import com.flewp.flewpbot.api.authenticator.StreamlabsAuthenticator;
-import com.flewp.flewpbot.api.authenticator.TwitchHelixAuthenticator;
-import com.flewp.flewpbot.api.authenticator.TwitchKrakenAuthenticator;
+import com.flewp.flewpbot.api.authenticator.TwitchAuthenticator;
+import com.flewp.flewpbot.api.controller.DiscordAPIController;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.api.interceptor.JamisphereRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.StreamlabsRequestInterceptor;
-import com.flewp.flewpbot.api.interceptor.TwitchHelixRequestInterceptor;
-import com.flewp.flewpbot.api.interceptor.TwitchKrakenRequestInterceptor;
-import com.github.philippheuer.events4j.EventManager;
+import com.flewp.flewpbot.api.interceptor.TwitchRequestInterceptor;
+import com.flewp.flewpbot.pusher.PusherManager;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -51,14 +50,8 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchHelixRequestInterceptor provideTwitchHelixRequestInterceptor(Configuration configuration) {
-        return new TwitchHelixRequestInterceptor(configuration);
-    }
-
-    @Provides
-    @Singleton
-    public TwitchKrakenRequestInterceptor provideTwitchKrakenRequestInterceptor(Configuration configuration) {
-        return new TwitchKrakenRequestInterceptor(configuration);
+    public TwitchRequestInterceptor provideTwitchRequestInterceptor(Configuration configuration) {
+        return new TwitchRequestInterceptor(configuration);
     }
 
     @Provides
@@ -75,14 +68,8 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchHelixAuthenticator provideTwitchHelixAuthenticator(Configuration configuration) {
-        return new TwitchHelixAuthenticator(configuration);
-    }
-
-    @Provides
-    @Singleton
-    public TwitchKrakenAuthenticator provideTwitchKrakenAuthenticator(Configuration configuration) {
-        return new TwitchKrakenAuthenticator(configuration);
+    public TwitchAuthenticator provideTwitchAuthenticator(Configuration configuration) {
+        return new TwitchAuthenticator(configuration);
     }
 
     @Provides
@@ -93,9 +80,15 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchHelixAPI provideTwitchHelixAPI(OkHttpClient okHttpClient,
-                                                TwitchHelixRequestInterceptor requestInterceptor,
-                                                TwitchHelixAuthenticator authenticator) {
+    public JamisphereAuthenticator provideJamisphereAuthenticator(Configuration configuration) {
+        return new JamisphereAuthenticator(configuration);
+    }
+
+    @Provides
+    @Singleton
+    public TwitchAPI provideTwitchAPI(OkHttpClient okHttpClient,
+                                      TwitchRequestInterceptor requestInterceptor,
+                                      TwitchAuthenticator authenticator) {
         return new Retrofit.Builder()
                 .baseUrl("https://api.twitch.tv/helix/")
                 .client(okHttpClient.newBuilder()
@@ -104,23 +97,7 @@ class FlewpBotModule {
                         .build())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .build().create(TwitchHelixAPI.class);
-    }
-
-    @Provides
-    @Singleton
-    public TwitchKrakenAPI provideTwitchKrakenAPI(OkHttpClient okHttpClient,
-                                                  TwitchKrakenRequestInterceptor requestInterceptor,
-                                                  TwitchKrakenAuthenticator authenticator) {
-        return new Retrofit.Builder()
-                .baseUrl("https://api.twitch.tv/kraken/")
-                .client(okHttpClient.newBuilder()
-                        .addInterceptor(requestInterceptor)
-                        .authenticator(authenticator)
-                        .build())
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .build().create(TwitchKrakenAPI.class);
+                .build().create(TwitchAPI.class);
     }
 
     @Provides
@@ -141,11 +118,13 @@ class FlewpBotModule {
     @Provides
     @Singleton
     public JamisphereAPI provideJamisphereAPI(OkHttpClient okHttpClient,
-                                              JamisphereRequestInterceptor requestInterceptor) {
+                                              JamisphereRequestInterceptor requestInterceptor,
+                                              JamisphereAuthenticator authenticator) {
         return new Retrofit.Builder()
                 .baseUrl("https://hqc73tr82k.execute-api.us-west-2.amazonaws.com/Alpha/")
                 .client(okHttpClient.newBuilder()
                         .addInterceptor(requestInterceptor)
+                        .authenticator(authenticator)
                         .build())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
@@ -154,15 +133,26 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager,
-                                                          TwitchKrakenAPI twitchKrakenAPI, TwitchHelixAPI twitchHelixAPI) {
-        return new TwitchAPIController(configuration, eventManager, twitchKrakenAPI, twitchHelixAPI);
+    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI) {
+        return new TwitchAPIController(configuration, eventManager, twitchAPI, jamisphereAPI);
     }
 
     @Provides
     @Singleton
     public StreamlabsAPIController provideStreamlabsAPIController(Configuration configuration, EventManager eventManager,
-                                                                  StreamlabsAPI streamlabsAPI) {
-        return new StreamlabsAPIController(configuration, eventManager, streamlabsAPI);
+                                                                  StreamlabsAPI streamlabsAPI, JamisphereAPI jamisphereAPI) {
+        return new StreamlabsAPIController(configuration, eventManager, streamlabsAPI, jamisphereAPI);
+    }
+
+    @Provides
+    @Singleton
+    public DiscordAPIController provideDiscordAPIController(Configuration configuration, EventManager eventManager) {
+        return new DiscordAPIController(configuration, eventManager);
+    }
+
+    @Provides
+    @Singleton
+    public PusherManager providePusherManager(Configuration configuration, EventManager eventManager) {
+        return new PusherManager(configuration, eventManager);
     }
 }
