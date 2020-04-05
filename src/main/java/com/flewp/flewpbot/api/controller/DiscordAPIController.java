@@ -47,8 +47,11 @@ public class DiscordAPIController extends ListenerAdapter {
     @Override
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
         super.onMessageReceived(event);
+        if (event.getAuthor().isBot()) {
+            return;
+        }
 
-        ChatEvent chatEvent = new ChatEvent(MessageOrigin.Discord,null, event.getChannel().getId(), event.getMessage().getContentDisplay());
+        ChatEvent chatEvent = new ChatEvent(MessageOrigin.Discord, null, event.getChannel().getId(), event.getMessage().getContentDisplay());
         eventManager.dispatchEvent(chatEvent);
     }
 
