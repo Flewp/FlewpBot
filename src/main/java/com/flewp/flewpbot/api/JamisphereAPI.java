@@ -15,10 +15,13 @@ public interface JamisphereAPI {
     Call<JamisphereRequestResponse> requestBehalf(@Body JamisphereRequestBehalfBody body);
 
     @POST("request/upgrade/behalf")
-    Call<JamisphereRequestResponse> requestUpgradeBehalf(@Body JamisphereRequestUpgradeBehalfBody body);
+    Call<JamisphereRequestUpgradeResponse> requestUpgradeBehalf(@Body JamisphereRequestUpgradeBehalfBody body);
 
     @POST("request/downgrade/behalf")
     Call<JamisphereRequestResponse> requestDowngradeBehalf(@Body JamisphereRequestUpgradeBehalfBody body);
+
+    @POST("request/transfer/behalf")
+    Call<JamisphereTransferResponse> requestTransferBehalf(@Body JamisphereRequestTransferBehalfBody body);
 
     @POST("request/remove/behalf")
     Call<JamisphereBaseResponse> requestRemoveBehalf(@Body JamisphereRequestRemoveBehalfBody body);
