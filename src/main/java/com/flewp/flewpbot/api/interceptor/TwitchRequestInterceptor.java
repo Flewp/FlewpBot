@@ -12,7 +12,6 @@ public class TwitchRequestInterceptor implements Interceptor {
 
     public TwitchRequestInterceptor(Configuration configuration) {
         this.configuration = configuration;
-        configuration.dumpFile();
     }
 
     @Override
