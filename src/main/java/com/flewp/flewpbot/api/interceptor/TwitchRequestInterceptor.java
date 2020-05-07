@@ -1,6 +1,7 @@
 package com.flewp.flewpbot.api.interceptor;
 
 import com.flewp.flewpbot.Configuration;
+import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 
@@ -11,6 +12,7 @@ public class TwitchRequestInterceptor implements Interceptor {
 
     public TwitchRequestInterceptor(Configuration configuration) {
         this.configuration = configuration;
+        configuration.dumpFile();
     }
 
     @Override

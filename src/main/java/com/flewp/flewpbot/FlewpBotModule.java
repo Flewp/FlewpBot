@@ -1,8 +1,6 @@
 package com.flewp.flewpbot;
 
-import com.flewp.flewpbot.api.JamisphereAPI;
-import com.flewp.flewpbot.api.StreamlabsAPI;
-import com.flewp.flewpbot.api.TwitchAPI;
+import com.flewp.flewpbot.api.*;
 import com.flewp.flewpbot.api.authenticator.JamisphereAuthenticator;
 import com.flewp.flewpbot.api.authenticator.StreamlabsAuthenticator;
 import com.flewp.flewpbot.api.authenticator.TwitchAuthenticator;
@@ -13,6 +11,9 @@ import com.flewp.flewpbot.api.interceptor.JamisphereRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.StreamlabsRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.TwitchRequestInterceptor;
 import com.flewp.flewpbot.pusher.PusherManager;
+import com.tinder.scarlet.Scarlet;
+import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter;
+import com.tinder.scarlet.websocket.okhttp.OkHttpClientUtils;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -128,13 +129,35 @@ class FlewpBotModule {
                         .build())
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .build().create(JamisphereAPI.class);
+                .build()
+                .create(JamisphereAPI.class);
     }
 
     @Provides
     @Singleton
-    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI) {
-        return new TwitchAPIController(configuration, eventManager, twitchAPI, jamisphereAPI);
+    public TwitchPubsubAPI provideTwitchPubsubAPI(OkHttpClient okHttpClient) {
+        return new Scarlet.Builder()
+                .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, "wss://pubsub-edge.twitch.tv"))
+                .addMessageAdapterFactory(new GsonMessageAdapter.Factory())
+                .build()
+                .create(TwitchPubsubAPI.class);
+    }
+
+    @Provides
+    @Singleton
+    public TwitchAuthAPI provideTwitchAuthAPI(OkHttpClient okHttpClient) {
+        return new Retrofit.Builder()
+                .baseUrl("https://id.twitch.tv/")
+                .client(okHttpClient.newBuilder().build())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(TwitchAuthAPI.class);
+    }
+
+    @Provides
+    @Singleton
+    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI, TwitchPubsubAPI twitchPubsubAPI) {
+        return new TwitchAPIController(configuration, eventManager, twitchAPI, jamisphereAPI, twitchPubsubAPI);
     }
 
     @Provides
