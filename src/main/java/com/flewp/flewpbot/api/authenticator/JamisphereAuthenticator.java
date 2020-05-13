@@ -23,6 +23,8 @@ public class JamisphereAuthenticator implements Authenticator {
         TwitchAPIController.refreshCredentials(configuration);
 
         return response.request().newBuilder()
-                .addHeader("token", configuration.twitchStreamerAccessToken).build();
+                .removeHeader("token")
+                .addHeader("token", configuration.twitchStreamerAccessToken)
+                .build();
     }
 }

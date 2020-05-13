@@ -22,6 +22,7 @@ public class TwitchAuthenticator implements Authenticator {
         TwitchAPIController.refreshCredentials(configuration);
 
         return response.request().newBuilder()
+                .removeHeader("Authorization")
                 .addHeader("Authorization", "Bearer " + configuration.twitchStreamerAccessToken)
                 .build();
     }
