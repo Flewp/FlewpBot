@@ -2,19 +2,17 @@ package com.flewp.flewpbot.api.controller;
 
 import com.flewp.flewpbot.Configuration;
 import com.flewp.flewpbot.EventManager;
-import com.flewp.flewpbot.api.*;
+import com.flewp.flewpbot.api.JamisphereAPI;
+import com.flewp.flewpbot.api.RetrofitEmptyCallback;
+import com.flewp.flewpbot.api.TwitchAPI;
+import com.flewp.flewpbot.api.TwitchAuthAPI;
 import com.flewp.flewpbot.model.api.GetUsersResponse;
 import com.flewp.flewpbot.model.api.JamispherePusherBody;
 import com.flewp.flewpbot.model.api.TwitchTokenResponse;
 import com.flewp.flewpbot.model.events.twitch.*;
-import com.flewp.flewpbot.model.events.twitch.pubsub.ListenData;
-import com.flewp.flewpbot.model.events.twitch.pubsub.PubsubEvent;
 import com.google.gson.Gson;
-import com.tinder.scarlet.Stream;
-import com.tinder.scarlet.WebSocket;
 import net.engio.mbassy.listener.Handler;
 import okhttp3.OkHttpClient;
-import org.jetbrains.annotations.NotNull;
 import org.kitteh.irc.client.library.Client;
 import org.kitteh.irc.client.library.defaults.element.DefaultUser;
 import org.kitteh.irc.client.library.element.MessageTag;
@@ -45,12 +43,11 @@ public class TwitchAPIController {
     private EventManager eventManager;
     private TwitchAPI twitchAPI;
     private JamisphereAPI jamisphereAPI;
-    private TwitchPubsubAPI twitchPubsubAPI;
 
     private String channelId;
     private String streamerUserId;
 
-    private ExecutorService botExecutorService;
+    private ExecutorService ircExecutorService;
     private Client ircClient;
 
     public static void refreshCredentials(Configuration configuration) {
@@ -81,17 +78,16 @@ public class TwitchAPIController {
         }
     }
 
-    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI, TwitchPubsubAPI twitchPubsubAPI) {
+    public TwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI) {
         this.configuration = configuration;
         this.eventManager = eventManager;
         this.twitchAPI = twitchAPI;
         this.jamisphereAPI = jamisphereAPI;
-        this.twitchPubsubAPI = twitchPubsubAPI;
     }
 
     public synchronized void startChatBot() {
         try {
-            botExecutorService = Executors.newSingleThreadExecutor();
+            ircExecutorService = Executors.newSingleThreadExecutor();
 
             ircClient = Client.builder()
                     .server().host("irc.chat.twitch.tv").port(443)
@@ -119,56 +115,13 @@ public class TwitchAPIController {
             ircClient.getEventManager().registerEventListener(this);
             ircClient.addChannel("#" + configuration.twitchStreamerName);
 
-            botExecutorService.submit(() -> {
+            ircExecutorService.submit(() -> {
                 try {
                     ircClient.connect();
                 } catch (Exception e) {
                     LoggerFactory.getLogger(TwitchAPIController.class).error("Error in Kitteh", e);
                 }
             });
-
-//            twitchPubsubAPI.observeWebSocketEvents().start(new Stream.Observer<WebSocket.Event>() {
-//                @Override
-//                public void onNext(WebSocket.Event event) {
-//                    System.out.println("Wow");
-//                    if (event instanceof WebSocket.Event.OnConnectionOpened) {
-//                        ListenData listenData = new ListenData(Collections.singletonList("channel-points-channel-v1." + "104896188"), configuration.twitchStreamerAccessToken);
-//
-//                        twitchPubsubAPI.sendEvent(new PubsubEvent("LISTEN", "817238917938szdas",
-//                                gson.toJsonTree(listenData).getAsJsonObject()));
-//                    }
-//                }
-//
-//                @Override
-//                public void onError(@NotNull Throwable throwable) {
-//                    System.out.println("Wow");
-//                }
-//
-//                @Override
-//                public void onComplete() {
-//                    System.out.println("Wow");
-//                }
-//            });
-//
-//            twitchPubsubAPI.observePubsubEvents().start(new Stream.Observer<PubsubEvent>() {
-//                @Override
-//                public void onNext(PubsubEvent event) {
-//                    System.out.println("Wow");
-//
-//                }
-//
-//                @Override
-//                public void onError(@NotNull Throwable throwable) {
-//
-//                    System.out.println("Wow");
-//                }
-//
-//                @Override
-//                public void onComplete() {
-//
-//                    System.out.println("Wow");
-//                }
-//            });
 
         } catch (Exception e) {
             LoggerFactory.getLogger(TwitchAPIController.class).error("Error in connecting Kitteh", e);

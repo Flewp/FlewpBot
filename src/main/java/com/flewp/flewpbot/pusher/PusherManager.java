@@ -97,12 +97,6 @@ public class PusherManager {
 
         pusher.getConnection().bind(ConnectionState.ALL, connectionEventListener);
 
-        channel.bind("guessingGameAnswered", pusherEvent -> {
-            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), GuessingGameAnsweredEvent.class));
-        });
-        channel.bind("guessingGameStart", pusherEvent -> {
-            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), GuessingGameStartedEvent.class));
-        });
         channel.bind("requestAdded", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestAddedEvent.class));
         });
@@ -126,15 +120,6 @@ public class PusherManager {
         });
         channel.bind("requestDowngraded", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestDowngradedEvent.class));
-        });
-        channel.bind("choiceGameStarted", pusherEvent -> {
-            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), ChoiceGameStartedEvent.class));
-        });
-        channel.bind("choiceEntered", pusherEvent -> {
-            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), ChoiceGameChoiceEnteredEvent.class));
-        });
-        channel.bind("choiceGameAnswered", pusherEvent -> {
-            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), ChoiceGameAnsweredEvent.class));
         });
         channel.bind("commandsUpdated", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), CommandsUpdatedEvent.class));

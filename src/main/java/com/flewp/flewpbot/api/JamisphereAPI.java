@@ -38,29 +38,8 @@ public interface JamisphereAPI {
     @GET("request/list")
     Call<JamisphereRequestListResponse> requestList();
 
-    @POST("guessinggame/answer")
-    Call<JamisphereGuessingGameAnswerResponse> guessingGameAnswer(@Body JamisphereGuessingGameAnswerBody body);
-
-    @POST("guessinggame/start")
-    Call<JamisphereGuessingGameStartResponse> guessingGameStart(@Body JamisphereGuessingGameStartBody body);
-
-    @POST("guessinggame/guess/behalf")
-    Call<JamisphereBaseResponse> guessingGameGuessBehalf(@Body JamisphereGuessingGameGuessBehalfBody body);
-
     @POST("drums")
     Call<JamisphereBaseResponse> drums(@Body JamisphereDrumsBody body);
-
-    @GET("games")
-    Call<JamisphereGamesResponse> games();
-
-    @POST("choicegame/start")
-    Call<JamisphereChoiceGameResponse> choiceGameStart(@Body JamisphereChoiceGameStartBody body);
-
-    @POST("choicegame/answer")
-    Call<JamisphereChoiceGameResponse> choiceGameAnswer(@Body JamisphereChoiceGameAnswerBody body);
-
-    @POST("choicegame/choice/behalf")
-    Call<JamisphereBaseResponse> choiceGameChoiceBehalf(@Body JamisphereChoiceGameChoiceBehalfBody body);
 
     @POST("commands")
     Call<JamisphereBaseResponse> commands(@Body JamisphereCommandsBody body);
@@ -70,4 +49,13 @@ public interface JamisphereAPI {
 
     @POST("pusher")
     Call<JamisphereBaseResponse> pusher(@Body JamispherePusherBody body);
+
+    @GET("event/list")
+    Call<JamisphereEventListResponse> eventList();
+
+    @POST("event/start")
+    Call<JamisphereEventStartResponse> eventStart(@Body JamisphereEventStartBody body);
+
+    @POST("event/finish")
+    Call<JamisphereEventFinishBody> eventFinish(@Body JamisphereEventFinishBody body);
 }

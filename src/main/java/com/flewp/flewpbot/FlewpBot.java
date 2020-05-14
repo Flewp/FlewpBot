@@ -6,6 +6,7 @@ import com.flewp.flewpbot.api.TwitchAPI;
 import com.flewp.flewpbot.api.controller.DiscordAPIController;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
+import com.flewp.flewpbot.api.controller.TwitchPubSubController;
 import com.flewp.flewpbot.model.api.GetFollowsResponse;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
@@ -54,6 +55,9 @@ public class FlewpBot {
     @Inject
     PusherManager pusherManager;
 
+    @Inject
+    TwitchPubSubController twitchPubSubController;
+
     public FlewpBot() {
         configuration = Configuration.getInstance();
 
@@ -65,8 +69,6 @@ public class FlewpBot {
         eventManager.onEvent(BitEvent.class).subscribe(this::onCheer);
         eventManager.onEvent(SubscribeEvent.class).subscribe(this::onSubscribe);
         eventManager.onEvent(NewDonationEvent.class).subscribe(this::onNewDonation);
-        eventManager.onEvent(GuessingGameAnsweredEvent.class).subscribe(this::onGuessingGameAnswered);
-        eventManager.onEvent(GuessingGameStartedEvent.class).subscribe(this::onGuessingGameStarted);
         eventManager.onEvent(RequestAddedEvent.class).subscribe(this::onRequestAdded);
         eventManager.onEvent(RequestLikedEvent.class).subscribe(this::onRequestLiked);
         eventManager.onEvent(RequestListClearedEvent.class).subscribe(this::onRequestListCleared);
@@ -75,15 +77,16 @@ public class FlewpBot {
         eventManager.onEvent(RequestUnlikedEvent.class).subscribe(this::onRequestUnliked);
         eventManager.onEvent(RequestUpgradedEvent.class).subscribe(this::onRequestUpgraded);
         eventManager.onEvent(RequestDowngradedEvent.class).subscribe(this::onRequestDowngraded);
-        eventManager.onEvent(ChoiceGameStartedEvent.class).subscribe(this::onChoiceGameStarted);
-        eventManager.onEvent(ChoiceGameChoiceEnteredEvent.class).subscribe(this::onChoiceGameChoiceEntered);
-        eventManager.onEvent(ChoiceGameAnsweredEvent.class).subscribe(this::onChoiceGameAnswered);
         eventManager.onEvent(CommandsUpdatedEvent.class).subscribe(this::onCommandsUpdated);
     }
 
     synchronized public void start() {
         if (configuration.enableIrc) {
             twitchAPIController.startChatBot();
+        }
+
+        if(configuration.enablePubSub) {
+            twitchPubSubController.startTwitchPubSub();
         }
 
         if (configuration.isStreamlabsConnectable()) {
@@ -129,16 +132,6 @@ public class FlewpBot {
         listenerList.forEach(listener -> listener.onChatMessage(chatEvent));
     }
 
-    synchronized private void onGuessingGameAnswered(GuessingGameAnsweredEvent guessingGameAnsweredEvent) {
-        LoggerFactory.getLogger(FlewpBot.class).info(guessingGameAnsweredEvent.toString());
-        listenerList.forEach(listener -> listener.onGuessingGameAnswered(guessingGameAnsweredEvent));
-    }
-
-    synchronized private void onGuessingGameStarted(GuessingGameStartedEvent guessingGameStartedEvent) {
-        LoggerFactory.getLogger(FlewpBot.class).info(guessingGameStartedEvent.toString());
-        listenerList.forEach(listener -> listener.onGuessingGameStarted(guessingGameStartedEvent));
-    }
-
     synchronized private void onRequestAdded(RequestAddedEvent requestAddedEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(requestAddedEvent.toString());
         listenerList.forEach(listener -> listener.onRequestAdded(requestAddedEvent));
@@ -177,21 +170,6 @@ public class FlewpBot {
     synchronized private void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(requestDowngradedEvent.toString());
         listenerList.forEach(listener -> listener.onRequestDowngraded(requestDowngradedEvent));
-    }
-
-    synchronized private void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {
-        LoggerFactory.getLogger(FlewpBot.class).info(choiceGameStartedEvent.toString());
-        listenerList.forEach(listener -> listener.onChoiceGameStarted(choiceGameStartedEvent));
-    }
-
-    synchronized private void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent) {
-        LoggerFactory.getLogger(FlewpBot.class).info(choiceGameChoiceEnteredEvent.toString());
-        listenerList.forEach(listener -> listener.onChoiceGameChoiceEntered(choiceGameChoiceEnteredEvent));
-    }
-
-    synchronized private void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent) {
-        LoggerFactory.getLogger(FlewpBot.class).info(choiceGameAnsweredEvent.toString());
-        listenerList.forEach(listener -> listener.onChoiceGameAnswered(choiceGameAnsweredEvent));
     }
 
     synchronized private void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {

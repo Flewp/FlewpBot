@@ -14,10 +14,6 @@ public interface FlewpBotListener {
 
     void onNewDonation(NewDonationEvent newDonationEvent);
 
-    void onGuessingGameAnswered(GuessingGameAnsweredEvent guessingGameAnsweredEvent);
-
-    void onGuessingGameStarted(GuessingGameStartedEvent guessingGameStartedEvent);
-
     void onRequestAdded(RequestAddedEvent requestAddedEvent);
 
     void onRequestLiked(RequestLikedEvent requestLikedEvent);
@@ -33,12 +29,6 @@ public interface FlewpBotListener {
     void onRequestUpgraded(RequestUpgradedEvent requestUpgradedEvent);
 
     void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent);
-
-    void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent);
-
-    void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent);
-
-    void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent);
 
     void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent);
 }

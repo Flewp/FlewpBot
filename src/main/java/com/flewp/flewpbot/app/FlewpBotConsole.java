@@ -47,16 +47,6 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         }
 
         @Override
-        public void onGuessingGameAnswered(GuessingGameAnsweredEvent guessingGameAnsweredEvent) {
-            int i = 0;
-        }
-
-        @Override
-        public void onGuessingGameStarted(GuessingGameStartedEvent guessingGameStartedEvent) {
-            int i = 0;
-        }
-
-        @Override
         public void onRequestAdded(RequestAddedEvent requestAddedEvent) {
             int i = 0;
         }
@@ -93,21 +83,6 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
 
         @Override
         public void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent) {
-            int i = 0;
-        }
-
-        @Override
-        public void onChoiceGameStarted(ChoiceGameStartedEvent choiceGameStartedEvent) {
-            int i = 0;
-        }
-
-        @Override
-        public void onChoiceGameAnswered(ChoiceGameAnsweredEvent choiceGameAnsweredEvent) {
-            int i = 0;
-        }
-
-        @Override
-        public void onChoiceGameChoiceEntered(ChoiceGameChoiceEnteredEvent choiceGameChoiceEnteredEvent) {
             int i = 0;
         }
 

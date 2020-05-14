@@ -7,11 +7,13 @@ import com.flewp.flewpbot.api.authenticator.TwitchAuthenticator;
 import com.flewp.flewpbot.api.controller.DiscordAPIController;
 import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
+import com.flewp.flewpbot.api.controller.TwitchPubSubController;
 import com.flewp.flewpbot.api.interceptor.JamisphereRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.StreamlabsRequestInterceptor;
 import com.flewp.flewpbot.api.interceptor.TwitchRequestInterceptor;
 import com.flewp.flewpbot.pusher.PusherManager;
 import com.tinder.scarlet.Scarlet;
+import com.tinder.scarlet.lifecycle.LifecycleRegistry;
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter;
 import com.tinder.scarlet.websocket.okhttp.OkHttpClientUtils;
 import dagger.Module;
@@ -135,10 +137,11 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchPubsubAPI provideTwitchPubsubAPI(OkHttpClient okHttpClient) {
+    public TwitchPubsubAPI provideTwitchPubsubAPI(OkHttpClient okHttpClient, LifecycleRegistry lifecycleRegistry) {
         return new Scarlet.Builder()
                 .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, "wss://pubsub-edge.twitch.tv"))
                 .addMessageAdapterFactory(new GsonMessageAdapter.Factory())
+                .lifecycle(lifecycleRegistry)
                 .build()
                 .create(TwitchPubsubAPI.class);
     }
@@ -156,8 +159,16 @@ class FlewpBotModule {
 
     @Provides
     @Singleton
-    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI, TwitchPubsubAPI twitchPubsubAPI) {
-        return new TwitchAPIController(configuration, eventManager, twitchAPI, jamisphereAPI, twitchPubsubAPI);
+    public TwitchPubSubController provideTwitchPubSubController(Configuration configuration, EventManager eventManager,
+                                                                LifecycleRegistry lifecycleRegistry, TwitchPubsubAPI twitchPubsubAPI,
+                                                                JamisphereAPI jamisphereAPI) {
+        return new TwitchPubSubController(configuration, eventManager, lifecycleRegistry, twitchPubsubAPI, jamisphereAPI);
+    }
+
+    @Provides
+    @Singleton
+    public TwitchAPIController provideTwitchAPIController(Configuration configuration, EventManager eventManager, TwitchAPI twitchAPI, JamisphereAPI jamisphereAPI) {
+        return new TwitchAPIController(configuration, eventManager, twitchAPI, jamisphereAPI);
     }
 
     @Provides
@@ -177,5 +188,11 @@ class FlewpBotModule {
     @Singleton
     public PusherManager providePusherManager(Configuration configuration, EventManager eventManager) {
         return new PusherManager(configuration, eventManager);
+    }
+
+    @Provides
+    @Singleton
+    public LifecycleRegistry provideLifecycleRegistry() {
+        return new LifecycleRegistry(0L);
     }
 }
