@@ -90,5 +90,25 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         public void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
             int i = 0;
         }
+
+        @Override
+        public void onPointsRedeemed(PointsRedeemedEvent pointsRedeemedEvent) {
+            int i = 0;
+        }
+
+        @Override
+        public void onEventStarted(EventStartedEvent eventStartedEvent) {
+            int i = 0;
+        }
+
+        @Override
+        public void onEventEntered(EventEnteredEvent eventEnteredEvent) {
+            int i = 0;
+        }
+
+        @Override
+        public void onEventFinished(EventFinishedEvent eventFinishedEvent) {
+            int i = 0;
+        }
     }
 }

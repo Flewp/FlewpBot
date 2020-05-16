@@ -71,4 +71,24 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
     public void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
 
     }
+
+    @Override
+    public void onPointsRedeemed(PointsRedeemedEvent pointsRedeemedEvent) {
+
+    }
+
+    @Override
+    public void onEventStarted(EventStartedEvent eventStartedEvent) {
+
+    }
+
+    @Override
+    public void onEventEntered(EventEnteredEvent eventEnteredEvent) {
+
+    }
+
+    @Override
+    public void onEventFinished(EventFinishedEvent eventFinishedEvent) {
+
+    }
 }

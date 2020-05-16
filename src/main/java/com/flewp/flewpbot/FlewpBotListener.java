@@ -31,4 +31,12 @@ public interface FlewpBotListener {
     void onRequestDowngraded(RequestDowngradedEvent requestDowngradedEvent);
 
     void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent);
+
+    void onPointsRedeemed(PointsRedeemedEvent pointsRedeemedEvent);
+
+    void onEventStarted(EventStartedEvent eventStartedEvent);
+
+    void onEventEntered(EventEnteredEvent eventEnteredEvent);
+
+    void onEventFinished(EventFinishedEvent eventFinishedEvent);
 }

@@ -78,6 +78,10 @@ public class FlewpBot {
         eventManager.onEvent(RequestUpgradedEvent.class).subscribe(this::onRequestUpgraded);
         eventManager.onEvent(RequestDowngradedEvent.class).subscribe(this::onRequestDowngraded);
         eventManager.onEvent(CommandsUpdatedEvent.class).subscribe(this::onCommandsUpdated);
+        eventManager.onEvent(PointsRedeemedEvent.class).subscribe(this::onPointsRedeemed);
+        eventManager.onEvent(EventStartedEvent.class).subscribe(this::onEventStarted);
+        eventManager.onEvent(EventEnteredEvent.class).subscribe(this::onEventEntered);
+        eventManager.onEvent(EventFinishedEvent.class).subscribe(this::onEventFinished);
     }
 
     synchronized public void start() {
@@ -175,6 +179,26 @@ public class FlewpBot {
     synchronized private void onCommandsUpdated(CommandsUpdatedEvent commandsUpdatedEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(commandsUpdatedEvent.toString());
         listenerList.forEach(listener -> listener.onCommandsUpdated(commandsUpdatedEvent));
+    }
+
+    synchronized private void onPointsRedeemed(PointsRedeemedEvent pointsRedeemedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(pointsRedeemedEvent.toString());
+        listenerList.forEach(listener -> listener.onPointsRedeemed(pointsRedeemedEvent));
+    }
+
+    synchronized private void onEventStarted(EventStartedEvent eventStartedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(eventStartedEvent.toString());
+        listenerList.forEach(listener -> listener.onEventStarted(eventStartedEvent));
+    }
+
+    synchronized private void onEventEntered(EventEnteredEvent eventEnteredEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(eventEnteredEvent.toString());
+        listenerList.forEach(listener -> listener.onEventEntered(eventEnteredEvent));
+    }
+
+    synchronized private void onEventFinished(EventFinishedEvent eventFinishedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(eventFinishedEvent.toString());
+        listenerList.forEach(listener -> listener.onEventFinished(eventFinishedEvent));
     }
 
     private void connectWebSocket() {

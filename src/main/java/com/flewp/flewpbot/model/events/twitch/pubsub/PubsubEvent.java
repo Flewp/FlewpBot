@@ -12,4 +12,13 @@ public class PubsubEvent {
         this.nonce = nonce;
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "PubsubEvent{" +
+                "type='" + type + '\'' +
+                ", nonce='" + nonce + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }

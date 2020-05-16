@@ -4,8 +4,11 @@ import com.flewp.flewpbot.Configuration;
 import com.flewp.flewpbot.EventManager;
 import com.flewp.flewpbot.api.JamisphereAPI;
 import com.flewp.flewpbot.api.TwitchPubsubAPI;
+import com.flewp.flewpbot.model.events.jamisphere.PointsRedeemedEvent;
 import com.flewp.flewpbot.model.events.twitch.pubsub.ListenData;
 import com.flewp.flewpbot.model.events.twitch.pubsub.PubsubEvent;
+import com.flewp.flewpbot.model.events.twitch.pubsub.PubsubMessage;
+import com.flewp.flewpbot.model.events.twitch.pubsub.RedemptionData;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.tinder.scarlet.Lifecycle;
@@ -14,6 +17,8 @@ import com.tinder.scarlet.Stream;
 import com.tinder.scarlet.WebSocket;
 import com.tinder.scarlet.lifecycle.LifecycleRegistry;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -31,6 +36,8 @@ public class TwitchPubSubController {
     private TwitchPubsubAPI twitchPubsubAPI;
     private JamisphereAPI jamisphereAPI;
 
+    private Logger logger;
+
     private Stream.Disposable websocketEventDisposable;
     private Stream.Disposable pubsubEventDisposable;
 
@@ -46,6 +53,8 @@ public class TwitchPubSubController {
         this.lifecycleRegistry = lifecycleRegistry;
         this.twitchPubsubAPI = twitchPubsubAPI;
         this.jamisphereAPI = jamisphereAPI;
+
+        logger = LoggerFactory.getLogger(TwitchPubSubController.class);
     }
 
     public void startTwitchPubSub() {
@@ -91,12 +100,13 @@ public class TwitchPubSubController {
 
             @Override
             public void onError(@NotNull Throwable throwable) {
-                System.out.println("Wow");
+                logger.error("Websocket Events On Error " + throwable.toString());
+                restartAsync();
             }
 
             @Override
             public void onComplete() {
-                System.out.println("Wow");
+                logger.error("Websocket Events On Complete");
             }
         });
 
@@ -110,7 +120,38 @@ public class TwitchPubSubController {
                 switch (event.type) {
                     case "PONG":
                         currentPongTimestamp = System.currentTimeMillis();
-                        System.out.println("PONG");
+                        logger.info("Websocket PONG");
+                        break;
+                    case "MESSAGE":
+                        if (event.data == null) {
+                            return;
+                        }
+
+                        logger.info(event.toString());
+
+                        try {
+                            PubsubMessage pubsubMessage = gson.fromJson(event.data, PubsubMessage.class);
+                            if (pubsubMessage.message == null) {
+                                return;
+                            }
+
+                            PubsubMessage.Data data = gson.fromJson(pubsubMessage.message, PubsubMessage.Data.class);
+                            if (data.type == null || data.data == null || !data.type.equals("reward-redeemed")) {
+                                return;
+                            }
+
+                            RedemptionData redemptionData = gson.fromJson(data.data, RedemptionData.class);
+
+                            if (redemptionData == null) {
+                                return;
+                            }
+
+                            eventManager.dispatchEvent(new PointsRedeemedEvent(redemptionData));
+                        } catch (Exception e) {
+
+                        }
+                        break;
+                    default:
                         break;
                 }
 
@@ -118,12 +159,13 @@ public class TwitchPubSubController {
 
             @Override
             public void onError(@NotNull Throwable throwable) {
-                System.out.println("Wow");
+                logger.error("Pubsub Events on Error " + throwable.toString());
+                restartAsync();
             }
 
             @Override
             public void onComplete() {
-                System.out.println("Wow");
+                logger.error("Pubsub Events on Complete");
             }
         });
 
@@ -132,28 +174,31 @@ public class TwitchPubSubController {
 
         webSocketExecutorService = Executors.newScheduledThreadPool(2);
         webSocketExecutorService.scheduleAtFixedRate(() -> {
-            System.out.println("PING");
+            logger.info("Websocket PING");
             currentPingTimestamp = System.currentTimeMillis();
             twitchPubsubAPI.sendEvent(new PubsubEvent("PING", "", new JsonObject()));
-        }, 3, 3, TimeUnit.SECONDS);
+        }, 3, 3, TimeUnit.MINUTES);
         webSocketExecutorService.scheduleAtFixedRate(() -> {
-            if (currentPongTimestamp > currentPingTimestamp) {
-                System.out.println("We're healthy!");
+            if (currentPongTimestamp >= currentPingTimestamp) {
                 return;
             }
 
             if (Duration.between(Instant.ofEpochMilli(currentPingTimestamp), Instant.now()).toMillis() <
                     Duration.ofSeconds(10).toMillis()) {
-                System.out.println("Waiting for pong...");
+                logger.warn("Waiting for pong...");
                 return;
             }
 
+            logger.warn("Restarting Websocket...");
 
-            // Restart
-            new Thread(this::restartWebSocket).start();
-
-        }, 1, 1, TimeUnit.SECONDS);
+            restartAsync();
+        }, 3, 3, TimeUnit.SECONDS);
 
         lifecycleRegistry.onNext(Lifecycle.State.Started.INSTANCE);
+        logger.info("PubSub Websocket Connected!");
+    }
+
+    private void restartAsync() {
+        new Thread(this::restartWebSocket).start();
     }
 }

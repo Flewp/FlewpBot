@@ -124,6 +124,15 @@ public class PusherManager {
         channel.bind("commandsUpdated", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), CommandsUpdatedEvent.class));
         });
+        channel.bind("eventStarted", pusherEvent -> {
+            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), EventStartedEvent.class));
+        });
+        channel.bind("eventEntered", pusherEvent -> {
+            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), EventEnteredEvent.class));
+        });
+        channel.bind("eventFinished", pusherEvent -> {
+            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), EventFinishedEvent.class));
+        });
 
         if (!configuration.enableIrc) {
             channel.bind("twitchCheer", pusherEvent -> {
