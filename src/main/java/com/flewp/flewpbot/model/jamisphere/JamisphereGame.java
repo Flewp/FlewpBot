@@ -25,5 +25,5 @@ public class JamisphereGame {
     public JamisphereGameEntry winningEntry;
 
     public JamisphereRequest request;
-    public JamisphereVideo song;
+    public JamisphereSong song;
 }
