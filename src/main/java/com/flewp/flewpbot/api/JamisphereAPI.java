@@ -57,7 +57,7 @@ public interface JamisphereAPI {
     Call<JamisphereEventStartResponse> eventStart(@Body JamisphereEventStartBody body);
 
     @POST("event/finish")
-    Call<JamisphereEventFinishBody> eventFinish(@Body JamisphereEventFinishBody body);
+    Call<JamisphereEventFinishResponse> eventFinish(@Body JamisphereEventFinishBody body);
 
     @POST("event/enter/behalf")
     Call<JamisphereEventEnterResponse> eventEnter(@Body JamisphereEventEnterBody body);
