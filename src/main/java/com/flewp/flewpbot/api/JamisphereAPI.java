@@ -61,4 +61,7 @@ public interface JamisphereAPI {
 
     @POST("event/enter/behalf")
     Call<JamisphereEventEnterResponse> eventEnter(@Body JamisphereEventEnterBody body);
+
+    @POST("reward/redeem")
+    Call<JamisphereBaseResponse> rewardRedeem(@Body JamisphereRewardRedeemBody body);
 }
