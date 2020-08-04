@@ -41,6 +41,9 @@ public interface JamisphereAPI {
     @POST("request/drums")
     Call<JamisphereBaseResponse> requestDrums(@Body JamisphereDrumsBody body);
 
+    @POST("request/finish")
+    Call<JamisphereBaseResponse> requestFinish();
+
     @POST("commands")
     Call<JamisphereBaseResponse> commands(@Body JamisphereCommandsBody body);
 
