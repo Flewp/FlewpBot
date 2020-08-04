@@ -38,8 +38,8 @@ public interface JamisphereAPI {
     @GET("request/list")
     Call<JamisphereRequestListResponse> requestList();
 
-    @POST("drums")
-    Call<JamisphereBaseResponse> drums(@Body JamisphereDrumsBody body);
+    @POST("request/drums")
+    Call<JamisphereBaseResponse> requestDrums(@Body JamisphereDrumsBody body);
 
     @POST("commands")
     Call<JamisphereBaseResponse> commands(@Body JamisphereCommandsBody body);

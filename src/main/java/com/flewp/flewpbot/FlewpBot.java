@@ -30,7 +30,6 @@ public class FlewpBot {
     private WebSocketClient client;
     private List<FlewpBotMIDIReceiver> receiverList = new ArrayList<>();
 
-
     @Inject
     EventManager eventManager;
 
