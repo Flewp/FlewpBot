@@ -109,6 +109,9 @@ public class PusherManager {
         channel.bind("requestPlayed", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestPlayedEvent.class));
         });
+        channel.bind("requestFinished", pusherEvent -> {
+            eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestFinishedEvent.class));
+        });
         channel.bind("requestRemoved", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestRemovedEvent.class));
         });

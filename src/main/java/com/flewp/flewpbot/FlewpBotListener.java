@@ -22,6 +22,8 @@ public interface FlewpBotListener {
 
     void onRequestPlayed(RequestPlayedEvent requestPlayedEvent);
 
+    void onRequestFinished(RequestFinishedEvent requestFinishedEvent);
+
     void onRequestRemoved(RequestRemovedEvent requestRemovedEvent);
 
     void onRequestUnliked(RequestUnlikedEvent requestUnlikedEvent);

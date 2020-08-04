@@ -48,6 +48,11 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
     }
 
     @Override
+    public void onRequestFinished(RequestFinishedEvent requestFinishedEvent) {
+
+    }
+
+    @Override
     public void onRequestRemoved(RequestRemovedEvent requestRemovedEvent) {
 
     }

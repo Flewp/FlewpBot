@@ -73,6 +73,7 @@ public class FlewpBot {
         eventManager.onEvent(RequestLikedEvent.class).subscribe(this::onRequestLiked);
         eventManager.onEvent(RequestListClearedEvent.class).subscribe(this::onRequestListCleared);
         eventManager.onEvent(RequestPlayedEvent.class).subscribe(this::onRequestPlayed);
+        eventManager.onEvent(RequestFinishedEvent.class).subscribe(this::onRequestFinished);
         eventManager.onEvent(RequestRemovedEvent.class).subscribe(this::onRequestRemoved);
         eventManager.onEvent(RequestUnlikedEvent.class).subscribe(this::onRequestUnliked);
         eventManager.onEvent(RequestUpgradedEvent.class).subscribe(this::onRequestUpgraded);
@@ -89,7 +90,7 @@ public class FlewpBot {
             twitchAPIController.startChatBot();
         }
 
-        if(configuration.enablePubSub) {
+        if (configuration.enablePubSub) {
             twitchPubSubController.startTwitchPubSub();
         }
 
@@ -154,6 +155,11 @@ public class FlewpBot {
     synchronized private void onRequestPlayed(RequestPlayedEvent requestPlayedEvent) {
         LoggerFactory.getLogger(FlewpBot.class).info(requestPlayedEvent.toString());
         listenerList.forEach(listener -> listener.onRequestPlayed(requestPlayedEvent));
+    }
+
+    synchronized private void onRequestFinished(RequestFinishedEvent requestFinishedEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(requestFinishedEvent.toString());
+        listenerList.forEach(listener -> listener.onRequestFinished(requestFinishedEvent));
     }
 
     synchronized private void onRequestRemoved(RequestRemovedEvent requestRemovedEvent) {

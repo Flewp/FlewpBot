@@ -67,6 +67,11 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         }
 
         @Override
+        public void onRequestFinished(RequestFinishedEvent requestFinishedEvent) {
+            int i = 0;
+        }
+
+        @Override
         public void onRequestRemoved(RequestRemovedEvent requestRemovedEvent) {
             int i = 0;
         }
