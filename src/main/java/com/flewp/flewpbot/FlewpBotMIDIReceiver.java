@@ -1,15 +1,16 @@
 package com.flewp.flewpbot;
 
 import javax.sound.midi.MidiMessage;
+import java.util.List;
 
 public class FlewpBotMIDIReceiver {
     private MIDIMessageCallback midiMessageCallback;
-    private String name;
+    private List<String> names;
     private boolean matchExact;
 
-    public FlewpBotMIDIReceiver(MIDIMessageCallback midiMessageCallback, String name, boolean matchExact) {
+    public FlewpBotMIDIReceiver(MIDIMessageCallback midiMessageCallback, List<String> names, boolean matchExact) {
         this.midiMessageCallback = midiMessageCallback;
-        this.name = name;
+        this.names = names;
         this.matchExact = matchExact;
     }
 
@@ -17,8 +18,8 @@ public class FlewpBotMIDIReceiver {
         return midiMessageCallback;
     }
 
-    public String getName() {
-        return name;
+    public List<String> getNames() {
+        return names;
     }
 
     public boolean isMatchExact() {

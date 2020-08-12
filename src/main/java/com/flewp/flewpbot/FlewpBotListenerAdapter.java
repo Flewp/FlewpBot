@@ -1,5 +1,6 @@
 package com.flewp.flewpbot;
 
+import com.flewp.flewpbot.model.events.flewp.FlewpProductionEvent;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 
@@ -94,6 +95,11 @@ public class FlewpBotListenerAdapter implements FlewpBotListener {
 
     @Override
     public void onEventFinished(EventFinishedEvent eventFinishedEvent) {
+
+    }
+
+    @Override
+    public void onFlewpProductionEvent(FlewpProductionEvent flewpProductionEvent) {
 
     }
 }

@@ -1,5 +1,6 @@
 package com.flewp.flewpbot;
 
+import com.flewp.flewpbot.model.events.flewp.FlewpProductionEvent;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 
@@ -41,4 +42,6 @@ public interface FlewpBotListener {
     void onEventEntered(EventEnteredEvent eventEnteredEvent);
 
     void onEventFinished(EventFinishedEvent eventFinishedEvent);
+
+    void onFlewpProductionEvent(FlewpProductionEvent flewpProductionEvent);
 }

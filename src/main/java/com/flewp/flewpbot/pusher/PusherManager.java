@@ -2,6 +2,7 @@ package com.flewp.flewpbot.pusher;
 
 import com.flewp.flewpbot.Configuration;
 import com.flewp.flewpbot.EventManager;
+import com.flewp.flewpbot.model.events.flewp.FlewpProductionEvent;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.BitEvent;
 import com.flewp.flewpbot.model.events.twitch.NewDonationEvent;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 public class PusherManager {
+    private static final String FLEWP_EVENT = "flewp";
     private static final String JAMISPHERE_EVENT = "jamisphere";
     private Gson gson = new Gson();
     private Pusher pusher;
@@ -25,7 +27,8 @@ public class PusherManager {
     private Configuration configuration;
     private EventManager eventManager;
 
-    private Channel channel;
+    private Channel jamisphereChannel;
+    private Channel flewpChannel;
     private ConnectionEventListener connectionEventListener;
 
     private boolean reconnect = true;
@@ -51,7 +54,8 @@ public class PusherManager {
         PusherOptions options = new PusherOptions().setCluster(configuration.pusherCluster);
         pusher = new Pusher(configuration.pusherKey, options);
 
-        channel = pusher.subscribe(JAMISPHERE_EVENT);
+        jamisphereChannel = pusher.subscribe(JAMISPHERE_EVENT);
+        flewpChannel = pusher.subscribe(FLEWP_EVENT);
         connectionEventListener = new ConnectionEventListener() {
             @Override
             public void onConnectionStateChange(ConnectionStateChange change) {
@@ -97,60 +101,64 @@ public class PusherManager {
 
         pusher.getConnection().bind(ConnectionState.ALL, connectionEventListener);
 
-        channel.bind("requestAdded", pusherEvent -> {
+        jamisphereChannel.bind("requestAdded", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestAddedEvent.class));
         });
-        channel.bind("requestLiked", pusherEvent -> {
+        jamisphereChannel.bind("requestLiked", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestLikedEvent.class));
         });
-        channel.bind("requestListCleared", pusherEvent -> {
+        jamisphereChannel.bind("requestListCleared", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestListClearedEvent.class));
         });
-        channel.bind("requestPlayed", pusherEvent -> {
+        jamisphereChannel.bind("requestPlayed", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestPlayedEvent.class));
         });
-        channel.bind("requestFinished", pusherEvent -> {
+        jamisphereChannel.bind("requestFinished", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestFinishedEvent.class));
         });
-        channel.bind("requestRemoved", pusherEvent -> {
+        jamisphereChannel.bind("requestRemoved", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestRemovedEvent.class));
         });
-        channel.bind("requestUnliked", pusherEvent -> {
+        jamisphereChannel.bind("requestUnliked", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestUnlikedEvent.class));
         });
-        channel.bind("requestUpgraded", pusherEvent -> {
+        jamisphereChannel.bind("requestUpgraded", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestUpgradedEvent.class));
         });
-        channel.bind("requestDowngraded", pusherEvent -> {
+        jamisphereChannel.bind("requestDowngraded", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), RequestDowngradedEvent.class));
         });
-        channel.bind("commandsUpdated", pusherEvent -> {
+        jamisphereChannel.bind("commandsUpdated", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), CommandsUpdatedEvent.class));
         });
-        channel.bind("eventStarted", pusherEvent -> {
+        jamisphereChannel.bind("eventStarted", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), EventStartedEvent.class));
         });
-        channel.bind("eventEntered", pusherEvent -> {
+        jamisphereChannel.bind("eventEntered", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), EventEnteredEvent.class));
         });
-        channel.bind("eventFinished", pusherEvent -> {
+        jamisphereChannel.bind("eventFinished", pusherEvent -> {
             eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), EventFinishedEvent.class));
         });
 
         if (!configuration.enableIrc) {
-            channel.bind("twitchCheer", pusherEvent -> {
+            jamisphereChannel.bind("twitchCheer", pusherEvent -> {
                 eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), BitEvent.class));
             });
-            channel.bind("twitchSubscribe", pusherEvent -> {
+            jamisphereChannel.bind("twitchSubscribe", pusherEvent -> {
                 eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), SubscribeEvent.class));
             });
         }
 
         if (!configuration.isStreamlabsConnectable()) {
-            channel.bind("streamlabsDonation", pusherEvent -> {
+            jamisphereChannel.bind("streamlabsDonation", pusherEvent -> {
                 eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), NewDonationEvent.class));
             });
         }
+
+        flewpChannel.bind("production", pusherEvent -> {
+           eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), FlewpProductionEvent.class));
+        });
 
         pusher.connect();
     }
@@ -163,7 +171,9 @@ public class PusherManager {
         }
 
         pusher.unsubscribe(JAMISPHERE_EVENT);
-        channel = null;
+        pusher.unsubscribe(FLEWP_EVENT);
+        jamisphereChannel = null;
+        flewpChannel = null;
 
         pusher.disconnect();
     }

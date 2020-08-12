@@ -8,6 +8,7 @@ import com.flewp.flewpbot.api.controller.StreamlabsAPIController;
 import com.flewp.flewpbot.api.controller.TwitchAPIController;
 import com.flewp.flewpbot.api.controller.TwitchPubSubController;
 import com.flewp.flewpbot.model.api.GetFollowsResponse;
+import com.flewp.flewpbot.model.events.flewp.FlewpProductionEvent;
 import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 import com.flewp.flewpbot.pusher.PusherManager;
@@ -82,6 +83,7 @@ public class FlewpBot {
         eventManager.onEvent(EventStartedEvent.class).subscribe(this::onEventStarted);
         eventManager.onEvent(EventEnteredEvent.class).subscribe(this::onEventEntered);
         eventManager.onEvent(EventFinishedEvent.class).subscribe(this::onEventFinished);
+        eventManager.onEvent(FlewpProductionEvent.class).subscribe(this::onFlewpProductionEvent);
     }
 
     synchronized public void start() {
@@ -206,6 +208,11 @@ public class FlewpBot {
         listenerList.forEach(listener -> listener.onEventFinished(eventFinishedEvent));
     }
 
+    synchronized private void onFlewpProductionEvent(FlewpProductionEvent flewpProductionEvent) {
+        LoggerFactory.getLogger(FlewpBot.class).info(flewpProductionEvent.toString());
+        listenerList.forEach(listener -> listener.onFlewpProductionEvent(flewpProductionEvent));
+    }
+
     private void connectWebSocket() {
         if (client != null && (!client.isClosing() || !client.isClosed() || !client.isFlushAndClose())) {
             client.close();
@@ -287,12 +294,12 @@ public class FlewpBot {
     }
 
     synchronized public void sendMIDIMessage(String deviceName, MidiMessage message, long timestamp) {
-        receiverList.stream().filter(receiver ->
-                receiver.isMatchExact() ? receiver.getName().equalsIgnoreCase(deviceName) :
-                        deviceName.toLowerCase().contains(receiver.getName().toLowerCase())
-        ).forEach(receiver -> {
-            receiver.getMidiMessageCallback().onMIDIMessage(deviceName, message, timestamp);
-        });
+        receiverList.stream().filter(receiver -> receiver.getNames().stream()
+                .anyMatch(name ->
+                        receiver.isMatchExact() ? name.equalsIgnoreCase(deviceName) :
+                                deviceName.toLowerCase().contains(name.toLowerCase())))
+                .forEach(receiver ->
+                        receiver.getMidiMessageCallback().onMIDIMessage(deviceName, message, timestamp));
     }
 
     synchronized public void addMIDIReceiver(FlewpBotMIDIReceiver flewpBotMIDIReceiver) {
