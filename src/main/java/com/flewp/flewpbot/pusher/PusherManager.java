@@ -8,6 +8,8 @@ import com.flewp.flewpbot.model.events.twitch.BitEvent;
 import com.flewp.flewpbot.model.events.twitch.NewDonationEvent;
 import com.flewp.flewpbot.model.events.twitch.SubscribeEvent;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
@@ -157,7 +159,7 @@ public class PusherManager {
         }
 
         flewpChannel.bind("production", pusherEvent -> {
-           eventManager.dispatchEvent(gson.fromJson(pusherEvent.getData(), FlewpProductionEvent.class));
+            eventManager.dispatchEvent(new FlewpProductionEvent(new JsonParser().parse(pusherEvent.getData()).getAsJsonObject()));
         });
 
         pusher.connect();

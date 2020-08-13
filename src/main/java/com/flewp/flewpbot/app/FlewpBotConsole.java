@@ -121,6 +121,7 @@ class FlewpBotConsole extends FlewpBotListenerAdapter {
         @Override
         public void onFlewpProductionEvent(FlewpProductionEvent flewpProductionEvent) {
             int i = 0;
+            flewpProductionEvent.getProductionValue();
         }
     }
 }
