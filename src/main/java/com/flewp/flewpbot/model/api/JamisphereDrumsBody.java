@@ -5,10 +5,12 @@ import java.util.List;
 public class JamisphereDrumsBody {
     public String requestId;
     public List<Hit> hits;
+    public Boolean sendEvent;
 
-    public JamisphereDrumsBody(String requestId, List<Hit> hits) {
+    public JamisphereDrumsBody(String requestId, List<Hit> hits, Boolean sendEvent) {
         this.requestId = requestId;
         this.hits = hits;
+        this.sendEvent = sendEvent;
     }
 
     public static class Hit {
