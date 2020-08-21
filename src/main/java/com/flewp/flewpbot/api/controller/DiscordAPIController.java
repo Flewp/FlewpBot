@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
@@ -32,7 +33,12 @@ public class DiscordAPIController extends ListenerAdapter {
         }
 
         try {
-            jda = JDABuilder.createLight(configuration.discordToken).addEventListeners(this).build();
+            jda = JDABuilder.createLight(configuration.discordToken, GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+                    GatewayIntent.DIRECT_MESSAGE_TYPING, GatewayIntent.DIRECT_MESSAGES,
+                    GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_EMOJIS, GatewayIntent.GUILD_INVITES,
+                    GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGE_REACTIONS,
+                    GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_PRESENCES)
+                    .addEventListeners(this).build();
         } catch (Exception e) {
             LoggerFactory.getLogger(DiscordAPIController.class).info("Error connecting to Discord");
         }
