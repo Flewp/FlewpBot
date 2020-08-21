@@ -13,6 +13,7 @@ import com.flewp.flewpbot.model.events.jamisphere.*;
 import com.flewp.flewpbot.model.events.twitch.*;
 import com.flewp.flewpbot.pusher.PusherManager;
 import com.pusher.client.Pusher;
+import net.dv8tion.jda.api.JDA;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.slf4j.LoggerFactory;
@@ -398,5 +399,13 @@ public class FlewpBot {
         }
 
         return "unknown";
+    }
+
+    public JDA getDiscordClient() {
+        if (discordAPIController == null) {
+            return null;
+        }
+
+        return discordAPIController.getJDA();
     }
 }

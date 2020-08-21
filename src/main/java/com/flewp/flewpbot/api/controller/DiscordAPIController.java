@@ -58,4 +58,8 @@ public class DiscordAPIController extends ListenerAdapter {
     public void sendMessage(String channelId, String message) {
         jda.getTextChannelById(channelId).sendMessage(message).queue();
     }
+
+    public JDA getJDA() {
+        return jda;
+    }
 }
